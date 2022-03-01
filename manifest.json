@@ -1,0 +1,43 @@
+{
+  "name": "Tidy Tabs!",
+  "description": "An organizer of tabs & tab groups",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background_main.js"
+  },
+  "commands": {
+    "new_tab_in_selected_group": {
+      "suggested_key": {
+        "default": "Alt+T",
+        "mac": "Alt+T"
+      },
+      "description": "Opens new tab in selected group, or at end"
+    },
+    "new_tab_in_new_group": {
+      "suggested_key": {
+        "default": "Alt+G",
+        "mac": "Alt+G"
+      },
+      "description": "Opens new tab in new group"
+    },
+    "sort_highlighted_tabs": {
+      "suggested_key": {
+        "default": "Alt+S",
+        "mac": "Alt+S"
+      },
+      "description": "Places selected tabs in groups based on sorting rules."
+    },
+    "sort_all_tabs": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Places all tabs in groups based on sorting rules."
+    }
+  },
+  "permissions": ["tabs", "tabGroups"],
+  "action": {
+    "default_popup": "html/popup.html"
+  }
+}

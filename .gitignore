@@ -1,2 +1,4 @@
 #Mac folder meta info
 .DS_Store
+# This is a reference file unrelated to the project
+storageAdaptor.js
