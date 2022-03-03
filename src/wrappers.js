@@ -6,7 +6,23 @@ Promises.chrome = class {}
 
 Promises.chrome.tabs = class {
   /**
-   * A Promise wrapper for chrome.tabs.query()
+   * A promise wrapper for chrome.tabs.get()
+   * see: https://developer.chrome.com/docs/extensions/reference/tabs/#method-get
+   * @param {object} tabId the id of the tab to fetch. 
+   * @returns {Promise<object>} a Tab.
+  */
+  static async get(tabId) {
+    return new Promise((resolve, reject)=> {
+      try {
+        chrome.tabs.get(tabId, tab=> resolve(tab));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  /**
+   * A promise wrapper for chrome.tabs.query()
    * see: https://developer.chrome.com/docs/extensions/reference/tabs/#method-query
    * @param {object} queryInfo a query info object
    * @returns {Promise<object>} a Tab array.
@@ -22,7 +38,7 @@ Promises.chrome.tabs = class {
   }
 
   /**
-   * A Promise wrapper for chrome.tabs.group()
+   * A promise wrapper for chrome.tabs.group()
    * see: https://developer.chrome.com/docs/extensions/reference/tabs/#method-group
    * @param {object} options a payload for selecting/creating a group to add tabs to
    * @returns {Promise<object>} the groupId that the tabs were added to 
@@ -38,7 +54,7 @@ Promises.chrome.tabs = class {
   }
 
   /**
-   * A Promise wrapper for chrome.tabs.create()
+   * A promise wrapper for chrome.tabs.create()
    * see: https://developer.chrome.com/docs/extensions/reference/tabs/#method-create
    * @param {object} createProperties a properties object for tab creation
    * @returns {Promise<object>} the created Tab.
@@ -54,7 +70,7 @@ Promises.chrome.tabs = class {
   }
 
   /**
-   * A Promise wrapper for chrome.tabs.update()
+   * A promise wrapper for chrome.tabs.update()
    * see: https://developer.chrome.com/docs/extensions/reference/tabs/#method-update
    * @param {number} tabId? the specifc tab to update.  Optional.  Defaults to selected tab of current window.
    * @param {object} updateProperties a properties object for updating tabs.
@@ -71,7 +87,7 @@ Promises.chrome.tabs = class {
   }
 
   /**
-   * A Promise wrapper for chrome.tabs.sendMessage()
+   * A promise wrapper for chrome.tabs.sendMessage()
    * @param {number} tabId 
    * @param {*} message a JSON-ifiable object to send to the content scripts.
    * @param {*} options 
@@ -94,7 +110,7 @@ Promises.chrome.tabs = class {
 
 Promises.chrome.tabGroups = class {
   /**
-   * A Promise wrapper for chrome.tabGroups.query()
+   * A promise wrapper for chrome.tabGroups.query()
    * see: https://developer.chrome.com/docs/extensions/reference/tabGroups/#method-query
    * @param {object} queryInfo a query info object
    * @returns {Promise<object>} a TabGroups array
@@ -110,7 +126,7 @@ Promises.chrome.tabGroups = class {
   }
 
   /**
-   * A Promise wrapper for chrome.tabGroups.update()
+   * A promise wrapper for chrome.tabGroups.update()
    * see: https://developer.chrome.com/docs/extensions/reference/tabGroups/#method-update
    * @param {number} groupId the group to update.
    * @param {object} updateProperties a query info object
@@ -129,7 +145,7 @@ Promises.chrome.tabGroups = class {
 
 Promises.chrome.windows = class {
   /**
-   * A Promise wrapper for chrome.windows.getCurrent()
+   * A promise wrapper for chrome.windows.getCurrent()
    * see: https://developer.chrome.com/docs/extensions/reference/windows/#method-getCurrent
    * @param {object} queryOptions a query options object
    * @returns {Promise<object>} the found Window object
@@ -161,7 +177,7 @@ Promises.chrome.unused = class {
   }
 
   /**
-   * A Promise wrapper for chrome.scripting.executeScript.
+   * A promise wrapper for chrome.scripting.executeScript.
    * @param {object} injection a ScriptInjection object; see chrome.scripting.executeScript.
    * @returns {Promise<object[]>} an InjectionResults object array; see chrome.scripting.executeScript.
   */
@@ -176,7 +192,7 @@ Promises.chrome.unused = class {
   }
 
   /**
-   * A Promise wrapper for chrome.scripting.insertCSS().
+   * A promise wrapper for chrome.scripting.insertCSS().
    * @param {object} injection a ScriptInjection object; see chrome.scripting.executeScript.
    * @returns {Promise<object[]>} an InjectionResults object array; see chrome.scripting.executeScript.
   */

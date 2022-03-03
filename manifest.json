@@ -12,14 +12,14 @@
         "default": "Alt+T",
         "mac": "Alt+T"
       },
-      "description": "Opens new tab in selected group, or at end"
+      "description": "Opens a new tab in the same group as the active tab."
     },
     "new_tab_in_new_group": {
       "suggested_key": {
         "default": "Alt+G",
         "mac": "Alt+G"
       },
-      "description": "Opens new tab in new group"
+      "description": "Opens a new tab in a new group"
     },
 
     "sort_highlighted_tabs": {
@@ -27,14 +27,14 @@
         "default": "Alt+S",
         "mac": "Alt+S"
       },
-      "description": "Places selected tabs in groups based on sorting rules."
+      "description": "Sorts the highlighted tabs.  This only affects tabs meeting a sorting criteria."
     },
     "sort_all_tabs": {
       "suggested_key": {
         "default": "Alt+Shift+S",
         "mac": "Alt+Shift+S"
       },
-      "description": "Places all tabs in groups based on sorting rules."
+      "description": "Sorts all tabs.  This only affects tabs meeting a sorting criteria."
     },
 
     "collapse_all_groups_in_window" : {
@@ -42,6 +42,13 @@
     },
     "collapse_all_groups" : {
       "description": "Collapse all open groups in all windows."
+    },
+
+    "sweep_groups_to_beginning" : {
+      "description": "Move all groups in current window to the beginning of the tab order."
+    },
+    "sweep_groups_to_end" : {
+      "description": "Move all groups in current window to the end of the tab order."
     }
   },
   "permissions": ["tabs", "tabGroups"],

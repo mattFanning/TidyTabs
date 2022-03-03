@@ -13,6 +13,10 @@ class Sorting {
       {address: "^chrome://extensions", groupProperties: {title: "🧩", color: "red"}}
     ]
   }
+  /**
+   * Executes the sorting functionality on the given tab.
+   * @param {object} Tab see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
+  */
   static async executeOn(tab) {
     const {id, url, groupId, windowId} = tab
     const sortRules = Sorting.getRules()

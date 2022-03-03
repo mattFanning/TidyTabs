@@ -28,17 +28,12 @@ importScripts('/src/sorting.js') /*
 
   /**
    * Opens a new tab in a new group
-   * Called from background_listeners.js
   */
   static async newTabInNewGroup() {
-    const createProperties = {
-      active: true
-    }
+    const createProperties = {active: true}
     const newTab = await Promises.chrome.tabs.create(createProperties)
     
-    const groupOptions = {
-      tabIds: newTab.id
-    }
+    const groupOptions = {tabIds: newTab.id}
     await Promises.chrome.tabs.group(groupOptions)
   }
 
@@ -62,6 +57,28 @@ importScripts('/src/sorting.js') /*
     for (const tab of allTabs) {
         await Sorting.executeOn(tab)
     }
+  }
+
+  /**
+   * collapses all other groups in the current window than the activeInfo's
+   * @param {object} activeInfo see: https://developer.chrome.com/docs/extensions/reference/tabs/#event-onActivated
+  */
+  static async collapseOtherGroupsInWindow(activeInfo) {
+    const {tabId, windowId} = activeInfo
+    // get all non-collapsed groups in windowId
+    const allGroups = await Promises.chrome.tabGroups.query({collapsed: false, windowId})
+    
+    // get the Tab for tabId and grab it's groupId
+    const activeTab = await Promises.chrome.tabs.get(tabId)
+    const {groupId} = activeTab
+    
+    //filter groupId out of allGroups
+    const filteredGroups = allGroups.filter(group=>{
+      return group.id != groupId
+    })
+    
+    // collapse filterGroups
+    await BackgroundController.collapseGroups(filteredGroups)
   }
 
   /**
