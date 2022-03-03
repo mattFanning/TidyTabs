@@ -2,6 +2,8 @@
  * This class wraps various chrome api methods into promises.
  */
 class Wrappers {
+
+
   // chrome.tabGroups
 
   /**
@@ -90,7 +92,8 @@ class Wrappers {
     });
   }
 
-// chrome.tabGroups
+
+  // chrome.tabGroups
 
   /**
    * A Promise wrapper for chrome.tabGroups.query()
@@ -98,7 +101,7 @@ class Wrappers {
    * @param {object} queryInfo a query info object
    * @returns {Promise<object>} a TabGroups array
   */
-  static async chromeTabsGroupsQuery(queryInfo) {
+  static async chromeTabGroupsQuery(queryInfo) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabGroups.query(queryInfo, tabGroups=> resolve(tabGroups));
@@ -115,7 +118,7 @@ class Wrappers {
    * @param {object} updateProperties a query info object
    * @returns {Promise<object>} the TabGroup updated
   */
-   static async chromeTabsGroupsUpdate(groupId, updateProperties) {
+  static async chromeTabGroupsUpdate(groupId, updateProperties) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabGroups.update(groupId, updateProperties, tabGroup=> resolve(tabGroup));
@@ -125,7 +128,27 @@ class Wrappers {
     });
   }
   
-// unused  
+
+  // chrome.windows
+
+    /**
+   * A Promise wrapper for chrome.windows.getCurrent()
+   * see: https://developer.chrome.com/docs/extensions/reference/windows/#method-getCurrent
+   * @param {object} queryOptions a query options object
+   * @returns {Promise<object>} the found Window object
+  */
+  static async chromeWindowsGetCurrent(queryOptions) {
+    return new Promise((resolve, reject)=> {
+      try {
+        chrome.windows.getCurrent(queryOptions, window=> resolve(window));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+
+  // unused  
 
   static async chromeRuntimeSendMessage(message, options) {
     return new Promise ((resolve, reject) => {

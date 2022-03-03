@@ -12,7 +12,7 @@ importScripts('/src/sorting.js') /*
    * Called from background_listeners.js
   */
   static async newTabInActiveGroup() {
-    const tabGroups = await Wrappers.chromeTabsGroupsQuery({})
+    const tabGroups = await Wrappers.chromeTabGroupsQuery({})
     const currentTab = await BackgroundController.getActiveTab()
     const {id, groupId} = currentTab
 
@@ -57,14 +57,44 @@ importScripts('/src/sorting.js') /*
    * Sorts all tabs in all windows
    * Each tab is run through all sorting rules
   */
-     static async sortAllTabs() {
-      const allTabs = await Wrappers.chromeTabsQuery({})
-      for (const tab of allTabs) {
-          await Sorting.executeOn(tab)
-      }
+  static async sortAllTabs() {
+    const allTabs = await Wrappers.chromeTabsQuery({})
+    for (const tab of allTabs) {
+        await Sorting.executeOn(tab)
     }
+  }
 
+  /**
+   * Collapses all tabs groups in the current window
+  */
+  static async collapseAllGroupsInWindow() {
+    // query for all non-collapsed groups in current window
+    const {id} = await Wrappers.chromeWindowsGetCurrent({})
+    const queryInfo = {collapsed: false, windowId: id}
+    const groups = await Wrappers.chromeTabGroupsQuery(queryInfo)
+    
+    await BackgroundController.collapseGroups(groups)
+  }
 
+  /**
+   * Collapses all tabs groups in all windows
+  */
+  static async collapseAllGroups() {
+    // query for all non-collapsed groups
+    const queryInfo = {collapsed: false}
+    const groups = await Wrappers.chromeTabGroupsQuery(queryInfo)
+
+    await BackgroundController.collapseGroups(groups)
+  }
+
+  static async collapseGroups(groups) {
+    // for each group: update to collapsed: true
+    const updateProperties = {collapsed: true}
+    for(const group of groups) {
+      await Wrappers.chromeTabGroupsUpdate(group.id, updateProperties)
+    }
+  }
+  
   static async getActiveTab() {
     let queryOptions = { active: true, currentWindow: true }
     let tab = await Wrappers.chromeTabsQuery(queryOptions)
@@ -78,7 +108,7 @@ importScripts('/src/sorting.js') /*
   }
 
   static async stringifyAllTabGroups() {
-    const tabGroups = await Wrappers.chromeTabsGroupsQuery({})
+    const tabGroups = await Wrappers.chromeTabGroupsQuery({})
     console.log(`%cAll Tab Groups:`, `color: ${GREEN}`)
     printArray(tabGroups)
   }

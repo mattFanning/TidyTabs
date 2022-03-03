@@ -6,10 +6,11 @@ importScripts('/src/wrappers.js');
 class Sorting {
   static getRules() {
     return [
-      {address: "https?://www.vai.com", groupProperties: {title: "Guitar", color: "grey"}},
-      {address: "https?://developer.chrome.com", groupProperties: {title: "Chrome API"}},
-      {address: "https?://(git.soma.salesforce.com|github.com)", groupProperties: {title: "Git", color: "green"}},
-      {address: "https?://gus.lightning.force.com", groupProperties: {title: "Gus", color: "blue"}}
+      {address: "^https?://www.vai.com", groupProperties: {title: "Guitar", color: "grey"}},
+      {address: "^https?://developer.chrome.com", groupProperties: {title: "Chrome API"}},
+      {address: "^https?://(git.soma.salesforce.com|github.com)", groupProperties: {title: "Git", color: "green"}},
+      {address: "^https?://gus.lightning.force.com", groupProperties: {title: "Gus", color: "blue"}},
+      {address: "^chrome://extensions", groupProperties: {title: "Ext", color: "red"}}
     ]
   }
   static async executeOn(tab) {
@@ -21,7 +22,7 @@ class Sorting {
       const regex = new RegExp(rule.address)
       if(regex.test(url)) {
         // current tab's url matches the sorting rule. Find or create group rule.groupName
-        const groups = await Wrappers.chromeTabsGroupsQuery({title: rule.groupProperties.title}) 
+        const groups = await Wrappers.chromeTabGroupsQuery({title: rule.groupProperties.title}) 
         
         if(groups.length > 0) {
           // group already exists.  Move currentTab to it.  Re-activate currentTab
@@ -46,7 +47,7 @@ class Sorting {
             createProperties: {windowId: windowId}
           })
           const updateProperties = rule.groupProperties
-          await Wrappers.chromeTabsGroupsUpdate(newGroupId, updateProperties)
+          await Wrappers.chromeTabGroupsUpdate(newGroupId, updateProperties)
         }
       } 
     }

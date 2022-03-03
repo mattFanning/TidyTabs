@@ -21,6 +21,7 @@
       },
       "description": "Opens new tab in new group"
     },
+
     "sort_highlighted_tabs": {
       "suggested_key": {
         "default": "Alt+S",
@@ -34,6 +35,13 @@
         "mac": "Alt+Shift+S"
       },
       "description": "Places all tabs in groups based on sorting rules."
+    },
+
+    "collapse_all_groups_in_window" : {
+      "description": "Collapse all open groups in the active tab's window."
+    },
+    "collapse_all_groups" : {
+      "description": "Collapse all open groups in all windows."
     }
   },
   "permissions": ["tabs", "tabGroups"],

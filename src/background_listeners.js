@@ -22,8 +22,15 @@ importScripts('/src/background_controller.js'); /*
       break
     case 'sort_all_tabs':
       console.log("executing %csort_all_tabs", `color:green`)
-      // BackgroundController.sortAllTabs()
-      chrome.action.openPopup({})
+      BackgroundController.sortAllTabs()
+      break
+    case 'collapse_all_groups_in_window':
+      console.log("executing %ccollapse_all_groups_in_window", `color:green`)
+      BackgroundController.collapseAllGroupsInWindow()
+      break
+    case 'collapse_all_groups':
+      console.log("executing %ccollapse_all_groups", `color:green`)
+      BackgroundController.collapseAllGroups()
       break
     default:
       // code block
