@@ -1,18 +1,17 @@
 /**
  * This class wraps various chrome api methods into promises.
  */
-class Wrappers {
+class Promises {}
+Promises.chrome = class {}
 
-
-  // chrome.tabGroups
-
+Promises.chrome.tabs = class {
   /**
    * A Promise wrapper for chrome.tabs.query()
    * see: https://developer.chrome.com/docs/extensions/reference/tabs/#method-query
    * @param {object} queryInfo a query info object
    * @returns {Promise<object>} a Tab array.
   */
-  static async chromeTabsQuery(queryInfo) {
+  static async query(queryInfo) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabs.query(queryInfo, tabs=> resolve(tabs));
@@ -28,7 +27,7 @@ class Wrappers {
    * @param {object} options a payload for selecting/creating a group to add tabs to
    * @returns {Promise<object>} the groupId that the tabs were added to 
   */
-  static async chromeTabsGroup(options) {
+  static async group(options) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabs.group(options, groupId=> resolve(groupId));
@@ -44,7 +43,7 @@ class Wrappers {
    * @param {object} createProperties a properties object for tab creation
    * @returns {Promise<object>} the created Tab.
   */
-  static async chromeTabsCreate(createProperties) {
+  static async create(createProperties) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabs.create(createProperties, tab=> resolve(tab));
@@ -61,7 +60,7 @@ class Wrappers {
    * @param {object} updateProperties a properties object for updating tabs.
    * @returns {Promise<object>} the updated Tab.
   */
-   static async chromeTabsUpdate(tabId, updateProperties) {
+  static async update(tabId, updateProperties) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabs.update(tabId, updateProperties, tab=> resolve(tab));
@@ -78,7 +77,7 @@ class Wrappers {
    * @param {*} options 
    * @returns {Promise<object>} a JSON-ifiable object send back from the scripts.
   */
-  static async chromeTabsSendMessage(tabId, message, options) {
+  static async sendMessage(tabId, message, options) {
     return new Promise((resolve,reject)=> {
       try {
         chrome.tabs.sendMessage(tabId, message, options, response=> {
@@ -91,17 +90,16 @@ class Wrappers {
       }
     });
   }
+}
 
-
-  // chrome.tabGroups
-
+Promises.chrome.tabGroups = class {
   /**
    * A Promise wrapper for chrome.tabGroups.query()
    * see: https://developer.chrome.com/docs/extensions/reference/tabGroups/#method-query
    * @param {object} queryInfo a query info object
    * @returns {Promise<object>} a TabGroups array
   */
-  static async chromeTabGroupsQuery(queryInfo) {
+  static async query(queryInfo) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabGroups.query(queryInfo, tabGroups=> resolve(tabGroups));
@@ -118,7 +116,7 @@ class Wrappers {
    * @param {object} updateProperties a query info object
    * @returns {Promise<object>} the TabGroup updated
   */
-  static async chromeTabGroupsUpdate(groupId, updateProperties) {
+  static async update(groupId, updateProperties) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.tabGroups.update(groupId, updateProperties, tabGroup=> resolve(tabGroup));
@@ -127,17 +125,16 @@ class Wrappers {
       }
     });
   }
-  
+}
 
-  // chrome.windows
-
-    /**
+Promises.chrome.windows = class {
+  /**
    * A Promise wrapper for chrome.windows.getCurrent()
    * see: https://developer.chrome.com/docs/extensions/reference/windows/#method-getCurrent
    * @param {object} queryOptions a query options object
    * @returns {Promise<object>} the found Window object
   */
-  static async chromeWindowsGetCurrent(queryOptions) {
+  static async getCurrent(queryOptions) {
     return new Promise((resolve, reject)=> {
       try {
         chrome.windows.getCurrent(queryOptions, window=> resolve(window));
@@ -146,10 +143,9 @@ class Wrappers {
       }
     });
   }
+}
 
-
-  // unused  
-
+Promises.chrome.unused = class {
   static async chromeRuntimeSendMessage(message, options) {
     return new Promise ((resolve, reject) => {
       try {
@@ -163,7 +159,7 @@ class Wrappers {
       }
     });
   }
-  
+
   /**
    * A Promise wrapper for chrome.scripting.executeScript.
    * @param {object} injection a ScriptInjection object; see chrome.scripting.executeScript.
