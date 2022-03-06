@@ -53,6 +53,6 @@
   },
   "permissions": ["tabs", "tabGroups"],
   "action": {
-    "default_popup": "html/popup.html"
+    "default_popup": "popup/popup.html"
   }
 }

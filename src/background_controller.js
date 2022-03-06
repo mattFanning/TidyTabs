@@ -7,6 +7,47 @@ importScripts('/src/sorting.js') /*
  * The controller of the background operations.
 */
  class BackgroundController {
+  // messages
+  /**
+   * Executes the message string's command 
+   * @param {string} message the command to execute
+  */
+  static async executeMessage(message) {
+    console.log(`executing: %c${message}`, "color:green")
+    switch(message) {
+      case "new_tab_in_selected_group":
+        await BackgroundController.newTabInActiveGroup()
+        break
+      case "new_tab_in_new_group":
+        BackgroundController.newTabInNewGroup()
+        break
+
+      case "sort_highlighted_tabs":
+        await BackgroundController.sortHighlightedTabs()
+        break
+      case "sort_all_tabs":
+        await BackgroundController.sortAllTabs()
+        break
+
+      case "collapse_all_groups_in_window":
+        await BackgroundController.collapseAllGroupsInWindow()
+        break
+      case "collapse_all_groups":
+        await BackgroundController.collapseAllGroups()
+        break
+
+      case "sweep_groups_to_beginning":
+        await BackgroundController.sweepGroupsToBeginning()
+        break
+      case "sweep_groups_to_end":
+        await BackgroundController.sweepGroupsToEnd()
+        break
+      default:
+        console.error(`unknown command: %c${message}`, "color:red")
+    }
+  }
+
+  // tabs
   /**
    * Opens a new tab in the active group
    * Called from background_listeners.js
@@ -59,6 +100,25 @@ importScripts('/src/sorting.js') /*
     }
   }
 
+  static async getActiveTab() {
+    let queryOptions = { active: true, currentWindow: true }
+    let tab = await Promises.chrome.tabs.query(queryOptions)
+    return tab[0]
+  }
+
+  static async getHighlightedTabs() {
+    let queryOptions = { highlighted: true, currentWindow: true }
+    let tabs = await Promises.chrome.tabs.query(queryOptions)
+    return tabs
+  }
+  
+  static async stringifyAllTabs() {
+    const tabs = await Promises.chrome.tabs.query({})
+    console.log(`%cAll Tabs:`, `color:green`)
+    printArray(tabs)
+  }
+
+  // tabGroups
   /**
    * collapses all other groups in the current window than the activeInfo's
    * @param {object} activeInfo see: https://developer.chrome.com/docs/extensions/reference/tabs/#event-onActivated
@@ -112,27 +172,55 @@ importScripts('/src/sorting.js') /*
     }
   }
   
-  static async getActiveTab() {
-    let queryOptions = { active: true, currentWindow: true }
-    let tab = await Promises.chrome.tabs.query(queryOptions)
-    return tab[0]
+  /**
+   * Sweeps all groups to the first untabbed indexes while maintaining order.
+  */
+  static async sweepGroupsToBeginning() {
+    const groupIndexes = await BackgroundController.getTabGroupIndexesInCurrentWindow()
+    groupIndexes.sort( (a,b)=> {
+      //we want ordered by index: greatest -> least
+      if(a.index > b.index) {return -1} 
+      if(a.index < b.index) {return 1}
+      return 0
+    });
+
+    for(const groupIndex of groupIndexes) {
+      await Promises.chrome.tabGroups.move(groupIndex.groupId, {index:1})
+    }
+  }
+  
+  /**
+   * Sweeps all groups to the last indexes while maintaining order.
+  */
+  static async sweepGroupsToEnd() {
+    const groupIndexes = await BackgroundController.getTabGroupIndexesInCurrentWindow()
+    for(const groupIndex of groupIndexes) {
+      await Promises.chrome.tabGroups.move(groupIndex.groupId, {index: -1})
+    }
   }
 
-  static async getHighlightedTabs() {
-    let queryOptions = { highlighted: true, currentWindow: true }
-    let tabs = await Promises.chrome.tabs.query(queryOptions)
-    return tabs
+  /**
+   * Get a tabGroupIndex for each tabGroup in the current window
+   * @returns {Array.<Object>} array of tabGroupIndexes: {groupId, index}
+   * 
+  */
+  static async getTabGroupIndexesInCurrentWindow() {
+    const groupPositions = []
+    const tabs = await Promises.chrome.tabs.query({})
+    let currentGroupId = -1
+    
+    for(const tab of tabs) {
+      if(tab.groupId != currentGroupId && tab.groupId != -1) {
+        currentGroupId = tab.groupId
+        groupPositions.push({groupId: tab.groupId, index: tab.index})
+      }
+    }
+    return groupPositions
   }
 
   static async stringifyAllTabGroups() {
     const tabGroups = await Promises.chrome.tabGroups.query({})
     console.log(`%cAll Tab Groups:`, `color:green`)
     printArray(tabGroups)
-  }
-  
-  static async stringifyAllTabs() {
-    const tabs = await Promises.chrome.tabs.query({})
-    console.log(`%cAll Tabs:`, `color:green`)
-    printArray(tabs)
   }
 }

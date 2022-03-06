@@ -4,6 +4,7 @@
 class Promises {}
 Promises.chrome = class {}
 
+// chrome.tabs
 Promises.chrome.tabs = class {
   /**
    * A promise wrapper for chrome.tabs.get()
@@ -108,7 +109,25 @@ Promises.chrome.tabs = class {
   }
 }
 
+// chrome.tabsGroups
 Promises.chrome.tabGroups = class {
+  /**
+   * A promise wrapper for chrome.tabGroups.move()
+   * see: https://developer.chrome.com/docs/extensions/reference/tabGroups/#method-move
+  * @param {object} groupId the id of the group
+  * @param {object} moveProperties a move properties object
+   * @returns {Promise<object>} a TabGroup
+  */
+  static async move(groupId, moveProperties) {
+    return new Promise((resolve, reject)=> {
+      try {
+        chrome.tabGroups.move(groupId, moveProperties, tabGroup=> resolve(tabGroup));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+  
   /**
    * A promise wrapper for chrome.tabGroups.query()
    * see: https://developer.chrome.com/docs/extensions/reference/tabGroups/#method-query
@@ -143,6 +162,7 @@ Promises.chrome.tabGroups = class {
   }
 }
 
+// chrome.windows
 Promises.chrome.windows = class {
   /**
    * A promise wrapper for chrome.windows.getCurrent()
@@ -154,6 +174,24 @@ Promises.chrome.windows = class {
     return new Promise((resolve, reject)=> {
       try {
         chrome.windows.getCurrent(queryOptions, window=> resolve(window));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+}
+
+// chrome.runtime
+Promises.chrome.runtime = class {
+  static async sendMessage(message, options) {
+    return new Promise((resolve, reject) => {
+      try {
+        const extensionId = undefined // optional my ass!
+        chrome.runtime.sendMessage(extensionId, message, options, response => {
+          if(chrome.runtime.lastError) //This eats the error so it doesn't show up in logs.
+            console.debug(chrome.runtime.lastError.message);
+          resolve(response);
+        });
       } catch (e) {
         reject(e);
       }
