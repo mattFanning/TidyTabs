@@ -52,39 +52,49 @@ body {
 }
 
 .popup_button.button_hover_grey {
-  border-top: 5px solid #dbdbdb;
-  border-right: 5px solid #dbdbdb;
+  border-top: 5px solid rgb(220, 220, 220);
+  border-right: 5px solid rgb(220, 220, 220);
   border-bottom: 5px solid black;
-  border-left: 5px solid #dbdbdb;
+  border-left: 5px solid rgb(220, 220, 220);
   margin-bottom: -5px;
   margin-left: -5px;
   margin-right: 0px;
 }
 .popup_button.button_hover_blue {
-  border-top: 5px solid #0af;
-  border-right: 5px solid #0af;
+  border-top: 5px solid rgb(146, 182, 242);
+  border-right: 5px solid rgb(146, 182, 242);
   border-bottom: 5px solid black;
-  border-left: 5px solid #0af;
+  border-left: 5px solid rgb(146, 182, 242);
   margin-bottom: -5px;
   margin-left: -5px;
   margin-right: 0px;
 }
 
 .popup_button.button_hover_red {
-  border-top: 5px solid #d1877d;
-  border-right: 5px solid #d1877d;
+  border-top: 5px solid rgb(228, 144, 134);
+  border-right: 5px solid rgb(228, 144, 134);
   border-bottom: 5px solid black;
-  border-left: 5px solid #d1877d;
+  border-left: 5px solid rgb(228, 144, 134);
+  margin-bottom: -5px;
+  margin-left: -5px;
+  margin-right: 0px;
+}
+
+.popup_button.button_hover{
+  border-top: 5px solid;
+  border-right: 5px solid;
+  border-bottom: 5px solid black;
+  border-left: 5px solid;
   margin-bottom: -5px;
   margin-left: -5px;
   margin-right: 0px;
 }
 
 .popup_button.button_hover_yellow {
-  border-top: 5px solid #f0df4a;
-  border-right: 5px solid #f0df4a;
+  border-top: 5px solid rgb(248, 213, 117);
+  border-right: 5px solid rgb(248, 213, 117);
   border-bottom: 5px solid black;
-  border-left: 5px solid #f0df4a;
+  border-left: 5px solid rgb(248, 213, 117);
   margin-bottom: -5px;
   margin-left: -5px;
   margin-right: 0px;
@@ -111,12 +121,12 @@ body {
   font-size: 16px;
 }
 
-.background_grey {background-color:#dbdbdb;}
-.background_blue {background-color:#0af;}
-.background_red {background-color:#d1877d;}
-.background_yellow {background-color:#f0df4a;}
+.background_grey {background-color: rgb(220, 220, 220);}
+.background_blue {background-color:rgb(146, 182, 242);}
+.background_red {background-color:rgb(228, 144, 134);}
+.background_yellow {background-color:rgb(248, 213, 117);}
 
-.border_grey {border-color:#dbdbdb;}
-.border_blue {border-color:#0af;}
-.border_red {border-color:#d1877d;}
-.border_yellow {border-color:#f0df4a;}
+.border_grey {border-color: rgb(220, 220, 220);}
+.border_blue {border-color:rgb(146, 182, 242);}
+.border_red {border-color:rgb(228, 144, 134);}
+.border_yellow {border-color:rgb(248, 213, 117);}

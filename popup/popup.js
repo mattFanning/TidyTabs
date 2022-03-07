@@ -1,36 +1,41 @@
 class Popup {
 
   static async renderBody() {
-    const $buttonGroupTabs = $("<div>", {id: "button_group_tabs", class: "command_groups border_grey"})
-    const $buttonGroupSort = $("<div>", {id: "button_group_sort", class: "command_groups border_blue"})
-    const $buttonGroupCollapse = $("<div>", {id: "button_group_collapse", class: "command_groups border_red"})
-    const $buttonGroupSweep = $("<div>", {id: "button_group_sweep", class: "command_groups border_yellow"})
-
-    $buttonGroupTabs
-      .append(Popup.label('Tabs', 'grey'))
-      .append(Popup.button({label:'New Tab In Selected Group', sendMessage:'new_tab_in_selected_group', hoverClass:"button_hover_grey"}))
-      .append(Popup.button({label:'New Tab In New Group', sendMessage:'new_tab_in_new_group', hoverClass:"button_hover_grey"}))
-
-    $buttonGroupSort
-      .append(Popup.label('Sort', 'blue'))
-      .append(Popup.button({label:'Sort Highlighted Tabs', sendMessage:'sort_highlighted_tabs', hoverClass:"button_hover_blue"}))
-      .append(Popup.button({label:'Sort All Tabs', sendMessage:'sort_all_tabs', hoverClass:"button_hover_blue"}))
-
-    $buttonGroupCollapse
-      .append(Popup.label('Collapse', 'red'))
-      .append(Popup.button({label: 'Collapse All Groups In Window', sendMessage:'collapse_all_groups_in_window', hoverClass:"button_hover_red"}))
-      .append(Popup.button({label: 'Collapse All Groups', sendMessage:'collapse_all_groups', hoverClass:"button_hover_red"}))
-
-    $buttonGroupSweep
-      .append(Popup.label('Sweep', 'yellow'))
-      .append(Popup.button({label:'Sweep Groups To Beginning', sendMessage:'sweep_groups_to_beginning', hoverClass:"button_hover_yellow"}))
-      .append(Popup.button({label:'Sweep Groups To End', sendMessage:'sweep_groups_to_end', hoverClass:"button_hover_yellow"}))
-    
     $("body")
-      .append($buttonGroupTabs)
-      .append($buttonGroupSort)
-      .append($buttonGroupCollapse)
-      .append($buttonGroupSweep)
+      .append(Popup.buttonGroup(
+        {color:'grey', label:'New Tab', buttons:[
+          {label:'In Active Group', message:'new_tab_in_selected_group'},
+          {label:'In New Group', message:'new_tab_in_new_group'}] 
+      }))
+      .append(Popup.buttonGroup(
+        {color:'blue', label:'Sort', buttons:[
+          {label:'Highlighted Tabs', message:'sort_highlighted_tabs'},
+          {label:'All Tabs', message:'sort_all_tabs'}] 
+      }))
+      .append(Popup.buttonGroup(
+        {color:'red', label:'Collapse', buttons:[
+          {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
+          {label:'All Groups In All Windows', message:'collapse_all_groups'}] 
+      }))
+      .append(Popup.buttonGroup(
+        {color:'yellow', label:'Sweep', buttons:[
+          {label:'Groups To Beginning', message:'sweep_groups_to_beginning'},
+          {label:'Groups To End', message:'sweep_groups_to_end'}] 
+      }))
+  }
+
+  static buttonGroup(buttonGroupOptions) {  
+    //{color: string, label: string, buttons:[ {label: string, message: string},{label: string, message: string} ]}
+    const {color, label, buttons} = buttonGroupOptions
+    const $buttonGroup = $("<div>", {id: "button_group_tabs", class: `command_groups border_${color}`})
+    $buttonGroup
+      .append(Popup.label(label, color))
+    for(const button of buttons) {
+      $buttonGroup.append(Popup.button(
+        {label: button.label, sendMessage: button.message, hoverClass:`button_hover_${color}`}))
+    }
+
+    return $buttonGroup
   }
 
   static button(buttonOptions) {
