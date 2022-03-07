@@ -19,7 +19,7 @@ importScripts('/src/sorting.js') /*
         await BackgroundController.newTabInActiveGroup()
         break
       case "new_tab_in_new_group":
-        BackgroundController.newTabInNewGroup()
+        await BackgroundController.newTabInNewGroup()
         break
 
       case "sort_highlighted_tabs":
@@ -42,6 +42,13 @@ importScripts('/src/sorting.js') /*
       case "sweep_groups_to_end":
         await BackgroundController.sweepGroupsToEnd()
         break
+      
+      // case "auto_collapse_groups_status":
+      //   return AUTO_COLLAPSE_ENABLED
+      // case "auto_collapse_groups_toggle":
+      //   AUTO_COLLAPSE_ENABLED = !AUTO_COLLAPSE_ENABLED
+      //   return AUTO_COLLAPSE_ENABLED
+
       default:
         console.error(`unknown command: %c${message}`, "color:red")
     }
@@ -111,10 +118,19 @@ importScripts('/src/sorting.js') /*
     let tabs = await Promises.chrome.tabs.query(queryOptions)
     return tabs
   }
+
+  static async getFirstUnpinnedTabIndex() {
+    let queryOptions = { pinned: false, currentWindow: true }
+    let tabs = await Promises.chrome.tabs.query(queryOptions)
+    if (tabs.length) {
+      return tabs[0].index
+    }
+    return 0;
+  }
   
   static async stringifyAllTabs() {
     const tabs = await Promises.chrome.tabs.query({})
-    console.log(`%cAll Tabs:`, `color:green`)
+    console.log("%cAll Tabs:", "color:green")
     printArray(tabs)
   }
 
@@ -127,7 +143,7 @@ importScripts('/src/sorting.js') /*
     const {tabId, windowId} = activeInfo
     // get all non-collapsed groups in windowId
     const allGroups = await Promises.chrome.tabGroups.query({collapsed: false, windowId})
-    
+
     // get the Tab for tabId and grab it's groupId
     const activeTab = await Promises.chrome.tabs.get(tabId)
     const {groupId} = activeTab
@@ -136,7 +152,7 @@ importScripts('/src/sorting.js') /*
     const filteredGroups = allGroups.filter(group=>{
       return group.id != groupId
     })
-    
+
     // collapse filterGroups
     await BackgroundController.collapseGroups(filteredGroups)
   }
@@ -183,9 +199,11 @@ importScripts('/src/sorting.js') /*
       if(a.index < b.index) {return 1}
       return 0
     });
+    //determine which index to move tabs to
+    const index = await BackgroundController.getFirstUnpinnedTabIndex()
 
     for(const groupIndex of groupIndexes) {
-      await Promises.chrome.tabGroups.move(groupIndex.groupId, {index:1})
+      await Promises.chrome.tabGroups.move(groupIndex.groupId, {index})
     }
   }
   

@@ -15,7 +15,9 @@ class Popup {
       .append(Popup.buttonGroup(
         {color:'red', label:'Collapse', buttons:[
           {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
-          {label:'All Groups In All Windows', message:'collapse_all_groups'}] 
+          {label:'All Groups In All Windows', message:'collapse_all_groups'}]
+          //@WIP
+          // ,{type: 'toggle', label:'Inactive Groups Automatically', message:'collapse_all_groups'}] 
       }))
       .append(Popup.buttonGroup(
         {color:'yellow', label:'Sweep', buttons:[
@@ -54,6 +56,26 @@ class Popup {
 
     return $div
   }
+
+  /**
+   * @WIP 
+  */
+  // static toggleButton(buttonOptions) {
+  //   console.log(JSON.stringify(buttonOptions))
+  //   const {label, sendMessage, hoverClass} = buttonOptions
+  //   let $div = $("<div>", {"class": `popup_button`})
+  //   $div
+  //     .append(`<b>${label}</b>`)
+  //     .click(()=>{Promises.chrome.runtime.sendMessage(sendMessage)})
+  //     .hover(
+  //       function () { 
+  //         console.log("you're hovering!")
+  //         $(this).addClass(hoverClass) }, 
+  //       function () { $(this).removeClass(hoverClass) }
+  //     )
+
+  //   return $div
+  // }
 
   static label(title, color) {
     let $div = $("<div>", {"class": `popup_label background_${color}`})

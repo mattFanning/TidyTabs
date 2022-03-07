@@ -23,9 +23,12 @@ chrome.runtime.onInstalled.addListener(() => {
 })
 
 chrome.tabs.onActivated.addListener(activeInfo=> {
-  if(AUTO_COLLAPSE_ENABLED) {
-    BackgroundController.collapseOtherGroupsInWindow(activeInfo)
-  }
+  // Unchecked runtime.lastError: Tabs cannot be edited right now (user may be dragging a tab).
+  setTimeout(() => {
+    if(AUTO_COLLAPSE_ENABLED) {
+      BackgroundController.collapseOtherGroupsInWindow(activeInfo)
+    }
+  }, 100);
 })
 
 let AUTO_COLLAPSE_ENABLED = true

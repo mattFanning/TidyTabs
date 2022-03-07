@@ -3,8 +3,9 @@ body {
   flex-direction: column;
   flex-wrap: wrap;
 
-  height : 600px;
-  width: 600px;
+  height : 585px;
+  width: 785px;
+  overflow: hidden;
   
   margin: 0px;
   padding: 5px;
