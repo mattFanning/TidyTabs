@@ -17,7 +17,7 @@ class Popup {
           {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
           {label:'All Groups In All Windows', message:'collapse_all_groups'}]
           //@WIP
-          // ,{type: 'toggle', label:'Inactive Groups Automatically', message:'collapse_all_groups'}] 
+          // {type: 'toggle', label:'Inactive Groups Automatically', message:'auto_collapse_groups'}] 
       }))
       .append(Popup.buttonGroup(
         {color:'yellow', label:'Sweep', buttons:[
@@ -27,14 +27,19 @@ class Popup {
   }
 
   static buttonGroup(buttonGroupOptions) {  
-    //{color: string, label: string, buttons:[ {label: string, message: string},{label: string, message: string} ]}
-    const {color, label, buttons} = buttonGroupOptions
-    const $buttonGroup = $("<div>", {id: "button_group_tabs", class: `command_groups border_${color}`})
+    //{color: string, label: string, buttons:[ {type: string?,label: string, message: string},{label: string, message: string} ]}
+    const {type, color, label, buttons} = buttonGroupOptions
+    
+    const $buttonGroup = $("<div>", {id: "button_group_tabs", class: `button_group border_${color}`})
     $buttonGroup
       .append(Popup.label(label, color))
     for(const button of buttons) {
-      $buttonGroup.append(Popup.button(
-        {label: button.label, sendMessage: button.message, hoverClass:`button_hover_${color}`}))
+      switch(type) {
+        case 'toggle':
+          break
+        default:
+          $buttonGroup.append(Popup.button({type, color, label: button.label, message: button.message}))
+      }
     }
 
     return $buttonGroup
@@ -42,16 +47,15 @@ class Popup {
 
   static button(buttonOptions) {
     console.log(JSON.stringify(buttonOptions))
-    const {label, sendMessage, hoverClass} = buttonOptions
-    let $div = $("<div>", {"class": `popup_button`})
+    const {color, label, message} = buttonOptions
+    const hoveringClasses = `button_hover_margins button_hover_${color}`
+    let $div = $("<div>", {"class": `button`})
     $div
       .append(`<b>${label}</b>`)
-      .click(()=>{Promises.chrome.runtime.sendMessage(sendMessage)})
+      .click(()=>{Promises.chrome.runtime.sendMessage(message)})
       .hover(
-        function () { 
-          console.log("you're hovering!")
-          $(this).addClass(hoverClass) }, 
-        function () { $(this).removeClass(hoverClass) }
+        function () { $(this).addClass(hoveringClasses) }, 
+        function () { $(this).removeClass(hoveringClasses) }
       )
 
     return $div
@@ -63,7 +67,7 @@ class Popup {
   // static toggleButton(buttonOptions) {
   //   console.log(JSON.stringify(buttonOptions))
   //   const {label, sendMessage, hoverClass} = buttonOptions
-  //   let $div = $("<div>", {"class": `popup_button`})
+  //   let $div = $("<div>", {"class": `button`})
   //   $div
   //     .append(`<b>${label}</b>`)
   //     .click(()=>{Promises.chrome.runtime.sendMessage(sendMessage)})
@@ -78,7 +82,7 @@ class Popup {
   // }
 
   static label(title, color) {
-    let $div = $("<div>", {"class": `popup_label background_${color}`})
+    let $div = $("<div>", {"class": `group_label background_${color}`})
     $div.append(`<b>${title}</b>`)
     
     return $div

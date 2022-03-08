@@ -17,7 +17,7 @@ body {
   background-color: black;
 }
 
-.command_groups {
+.button_group {
   display: flex;
   align-items: flex-end;
   height: 50px;
@@ -30,7 +30,7 @@ body {
   margin-bottom: 5px;
 }
 
-.popup_button {
+.button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,56 +52,32 @@ body {
   border-radius: 5px 5px 0px 0px;
 }
 
-.popup_button.button_hover_grey {
-  border-top: 5px solid rgb(220, 220, 220);
-  border-right: 5px solid rgb(220, 220, 220);
-  border-bottom: 5px solid black;
-  border-left: 5px solid rgb(220, 220, 220);
-  margin-bottom: -5px;
-  margin-left: -5px;
-  margin-right: 0px;
-}
-.popup_button.button_hover_blue {
-  border-top: 5px solid rgb(146, 182, 242);
-  border-right: 5px solid rgb(146, 182, 242);
-  border-bottom: 5px solid black;
-  border-left: 5px solid rgb(146, 182, 242);
+.button.button_hover_margins {
   margin-bottom: -5px;
   margin-left: -5px;
   margin-right: 0px;
 }
 
-.popup_button.button_hover_red {
-  border-top: 5px solid rgb(228, 144, 134);
-  border-right: 5px solid rgb(228, 144, 134);
+.button.button_hover_grey {
+  border: 5px solid rgb(220, 220, 220);
   border-bottom: 5px solid black;
-  border-left: 5px solid rgb(228, 144, 134);
-  margin-bottom: -5px;
-  margin-left: -5px;
-  margin-right: 0px;
+}
+.button.button_hover_blue {
+  border: 5px solid rgb(146, 182, 242);
+  border-bottom: 5px solid black;
 }
 
-.popup_button.button_hover{
-  border-top: 5px solid;
-  border-right: 5px solid;
+.button.button_hover_red {
+  border: 5px solid rgb(228, 144, 134);
   border-bottom: 5px solid black;
-  border-left: 5px solid;
-  margin-bottom: -5px;
-  margin-left: -5px;
-  margin-right: 0px;
 }
 
-.popup_button.button_hover_yellow {
-  border-top: 5px solid rgb(248, 213, 117);
-  border-right: 5px solid rgb(248, 213, 117);
+.button.button_hover_yellow {
+  border: 5px solid rgb(248, 213, 117);
   border-bottom: 5px solid black;
-  border-left: 5px solid rgb(248, 213, 117);
-  margin-bottom: -5px;
-  margin-left: -5px;
-  margin-right: 0px;
 }
 
-.popup_label {
+.group_label {
   display: flex;
   align-items: center;
   justify-content: center;

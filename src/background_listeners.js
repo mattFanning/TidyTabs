@@ -6,13 +6,13 @@ importScripts('/src/background_controller.js') /*
  * Called when the user executes the extension's commands via keyword. 
  * @listens chrome.commands.onCommand
 */
-chrome.commands.onCommand.addListener(function (command) {
+chrome.commands.onCommand.addListener((command) => {
   console.log(`message: %c${command}\n%csent by: %ckeyboard commands`, 
     "color:green","color:white","color:green")
   BackgroundController.executeMessage(command)
 })
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse)=> {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(`message: %c${message}\n%csent by: %c${JSON.stringify(sender)}`, 
     "color:green","color:white","color:green")
     BackgroundController.executeMessage(message)
