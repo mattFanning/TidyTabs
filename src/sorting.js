@@ -10,7 +10,8 @@ class Sorting {
       {address: "^https?://developer.chrome.com", groupProperties: {title: "Chrome API"}},
       {address: "^https?://(git.soma.salesforce.com|github.com)", groupProperties: {title: "Git", color: "green"}},
       {address: "^https?://gus.lightning.force.com", groupProperties: {title: "Gus", color: "blue"}},
-      {address: "^chrome://extensions", groupProperties: {title: "🧩", color: "red"}}
+      {address: "^chrome://extensions", groupProperties: {title: "🧩", color: "red"}},
+      {address: "^https?://swarm.soma.salesforce.com", groupProperties: {title: "swarm", color: "yellow"}}
     ]
   }
   /**
