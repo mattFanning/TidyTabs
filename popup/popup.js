@@ -1,31 +1,31 @@
 class Popup {
 
   static async renderBody() {
-    $("body")
-      .append(Popup.buttonGroup(
-        {color:'grey', label:'New Tab', buttons:[
-          {label:'In Active Group', message:'new_tab_in_selected_group'},
-          {label:'In New Group', message:'new_tab_in_new_group'}] 
-      }))
-      .append(Popup.buttonGroup(
-        {color:'blue', label:'Sort', buttons:[
-          {label:'Highlighted Tabs', message:'sort_highlighted_tabs'},
-          {label:'All Tabs', message:'sort_all_tabs'}] 
-      }))
-      .append(Popup.buttonGroup(
-        {color:'red', label:'Collapse', buttons:[
-          {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
-          {label:'All Groups In All Windows', message:'collapse_all_groups'},
-          {type: 'toggle', label:'Inactive Groups Automatically', message:'auto_collapse_groups'}] 
-      }))
-      .append(Popup.buttonGroup(
-        {color:'yellow', label:'Sweep', buttons:[
-          {label:'Groups To Beginning', message:'sweep_groups_to_beginning'},
-          {label:'Groups To End', message:'sweep_groups_to_end'}] 
-      }))
+    const $newTab = await Popup.buttonGroup({color:'grey', label:'New Tab', buttons:[
+      {label:'In Active Group', message:'new_tab_in_selected_group'},
+      {label:'In New Group', message:'new_tab_in_new_group'}] 
+    })
+    const $sort = await Popup.buttonGroup({color:'blue', label:'Sort', buttons:[
+      {label:'Highlighted Tabs', message:'sort_highlighted_tabs'},
+      {label:'All Tabs', message:'sort_all_tabs'}] 
+    })
+    const $collapse = await Popup.buttonGroup({color:'red', label:'Collapse', buttons:[
+      {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
+      {label:'All Groups In All Windows', message:'collapse_all_groups'},
+      {type: 'toggle', label:'Inactive Groups Automatically', message:'auto_collapse_groups'}] 
+    })
+    const $sweep = await Popup.buttonGroup({color:'yellow', label:'Sweep', buttons:[
+      {label:'Groups To Beginning', message:'sweep_groups_to_beginning'},
+      {label:'Groups To End', message:'sweep_groups_to_end'}] 
+    })
+    $("body").empty()
+      .append($newTab)
+      .append($sort)
+      .append($collapse)
+      .append($sweep)
   }
 
-  static buttonGroup(buttonGroupOptions) {  
+  static async buttonGroup(buttonGroupOptions) {  
     //{color: string, label: string, buttons:[ {type: string?,label: string, message: string},{label: string, message: string} ]}
     const {color, label, buttons} = buttonGroupOptions
     
@@ -34,10 +34,10 @@ class Popup {
       .append(Popup.label(label, color))
     for(const button of buttons) {
       const {type} = button
-      console.log(`Button.type: %c${type}`, "color:green")
       switch(type) {
         case 'toggle':
-          $buttonGroup.append(Popup.toggleButton({type, color, label: button.label, message: button.message}))
+          const $toggleButton = await Popup.toggleButton({type, color, label: button.label, message: button.message})
+          $buttonGroup.append($toggleButton)
           break
         default:
           $buttonGroup.append(Popup.button({type, color, label: button.label, message: button.message}))
@@ -48,7 +48,7 @@ class Popup {
   }
 
   static button(buttonOptions) {
-    console.log(JSON.stringify(buttonOptions))
+    // console.log(JSON.stringify(buttonOptions))
     const {color, label, message} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
     const $div = $("<div>", {"class": `button`})
@@ -63,16 +63,22 @@ class Popup {
     return $div
   }
 
-  static toggleButton(buttonOptions) {
-    console.log(JSON.stringify(buttonOptions))
+  static async toggleButton(buttonOptions) {
+    // console.log(JSON.stringify(buttonOptions))
     const {color, label, message} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
     const $div = $("<div>", {"class": `button toggle_button`})
-    const $led = $("<div>", {"class": `toggle_led background_${color}`})
+    
+    // determine led color
+    const status = await Promises.chrome.runtime.sendMessage(`${message}_status`)
+    const ledColor = status ? 'green' : 'red'
+    const $led = $("<div>", {"class": `toggle_led background_${ledColor}`})
     $div
       .append($led)  
       .append(`<b>${label}</b>`)
-      .click(()=>{Promises.chrome.runtime.sendMessage(message)})
+      .click(async ()=>{
+        await Promises.chrome.runtime.sendMessage(`${message}_toggle`)
+      })
       .hover(
         function () { $(this).addClass(hoveringClasses) }, 
         function () { $(this).removeClass(hoveringClasses) }

@@ -8,49 +8,69 @@ importScripts('/src/sorting.js') /*
 */
  class BackgroundController {
   // messages
+  static AUTO_COLLAPSE_ENABLED = true;
+
+  static getAutoCollapseStatus() {
+    return BackgroundController.AUTO_COLLAPSE_ENABLED
+  }
+
+  static toggleAutoCollapseStatus() {
+    BackgroundController.AUTO_COLLAPSE_ENABLED = !BackgroundController.AUTO_COLLAPSE_ENABLED
+    return BackgroundController.AUTO_COLLAPSE_ENABLED
+  }
+
   /**
    * Executes the message string's command 
    * @param {string} message the command to execute
+   * @param {object} callback? the callback method to pass back values.  Optional
   */
-  static async executeMessage(message) {
-    console.log(`executing: %c${message}`, "color:green")
+  static async executeMessage(message, callback) {
+    console.log(`BackgroundController.execute\n\texecuting: %c${message}`, "color:green")
+    let returnedValue = undefined
     switch(message) {
       case "new_tab_in_selected_group":
-        await BackgroundController.newTabInActiveGroup()
+        returnedValue = await BackgroundController.newTabInActiveGroup()
         break
       case "new_tab_in_new_group":
-        await BackgroundController.newTabInNewGroup()
+        returnedValue = await BackgroundController.newTabInNewGroup()
         break
 
       case "sort_highlighted_tabs":
-        await BackgroundController.sortHighlightedTabs()
+        returnedValue = await BackgroundController.sortHighlightedTabs()
         break
       case "sort_all_tabs":
-        await BackgroundController.sortAllTabs()
+        returnedValue = await BackgroundController.sortAllTabs()
         break
 
       case "collapse_all_groups_in_window":
-        await BackgroundController.collapseAllGroupsInWindow()
+        returnedValue = await BackgroundController.collapseAllGroupsInWindow()
         break
       case "collapse_all_groups":
-        await BackgroundController.collapseAllGroups()
+        returnedValue = await BackgroundController.collapseAllGroups()
         break
 
       case "sweep_groups_to_beginning":
-        await BackgroundController.sweepGroupsToBeginning()
+        returnedValue = await BackgroundController.sweepGroupsToBeginning()
         break
       case "sweep_groups_to_end":
-        await BackgroundController.sweepGroupsToEnd()
+        returnedValue = await BackgroundController.sweepGroupsToEnd()
         break
       
-      // case "auto_collapse_groups_status":
-      //   return AUTO_COLLAPSE_ENABLED
-      // case "auto_collapse_groups_toggle":
-      //   AUTO_COLLAPSE_ENABLED = !AUTO_COLLAPSE_ENABLED
-      //   return AUTO_COLLAPSE_ENABLED
+      case "auto_collapse_groups_status":
+        returnedValue = BackgroundController.getAutoCollapseStatus()
+        break
+
+      case "auto_collapse_groups_toggle":
+        returnedValue = BackgroundController.toggleAutoCollapseStatus()
+        break
 
       default:
         console.error(`unknown command: %c${message}`, "color:red")
+    }
+
+    if(callback) {
+      console.log(`\treturned value: %c${returnedValue}`, "color:green")
+      callback(returnedValue)
     }
   }
 

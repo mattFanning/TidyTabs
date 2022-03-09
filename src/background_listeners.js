@@ -7,15 +7,16 @@ importScripts('/src/background_controller.js') /*
  * @listens chrome.commands.onCommand
 */
 chrome.commands.onCommand.addListener((command) => {
-  console.log(`message: %c${command}\n%csent by: %ckeyboard commands`, 
+  console.log(`chrome.commands.onCommand.addListener\n\tmessage: %c${command}\n\t%csent by: %ckeyboard commands`, 
     "color:green","color:white","color:green")
   BackgroundController.executeMessage(command)
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(`message: %c${message}\n%csent by: %c${JSON.stringify(sender)}`, 
+  console.log(`chrome.runtime.onMessage.addListener\n\tmessage: %c${message}\n\t%csent by: %c${JSON.stringify(sender)}`, 
     "color:green","color:white","color:green")
-    BackgroundController.executeMessage(message)
+
+  BackgroundController.executeMessage(message, sendResponse)
 })
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -25,10 +26,8 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.tabs.onActivated.addListener(activeInfo=> {
   // Unchecked runtime.lastError: Tabs cannot be edited right now (user may be dragging a tab).
   setTimeout(() => {
-    if(AUTO_COLLAPSE_ENABLED) {
+    if(BackgroundController.getAutoCollapseStatus()) {
       BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
   }, 100);
 })
-
-let AUTO_COLLAPSE_ENABLED = true

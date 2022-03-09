@@ -62,7 +62,7 @@ body {
   width: 10px;
   
   margin-top: -2px;
-  margin-left: -1px;
+  /* margin-left: -1px; */
   border: inset;
 }
 
@@ -116,6 +116,7 @@ body {
 .background_blue {background-color:rgb(146, 182, 242);}
 .background_red {background-color:rgb(228, 144, 134);}
 .background_yellow {background-color:rgb(248, 213, 117);}
+.background_green {background-color:rgb(145, 198, 153);}
 
 .border_grey {border-color: rgb(220, 220, 220);}
 .border_blue {border-color:rgb(146, 182, 242);}
