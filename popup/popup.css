@@ -63,7 +63,7 @@ body {
   
   margin-top: -2px;
   /* margin-left: -1px; */
-  border: inset;
+  border: 2px inset;
 }
 
 .button.button_hover_margins {

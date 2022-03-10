@@ -15,7 +15,6 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(`chrome.runtime.onMessage.addListener\n\tmessage: %c${message}\n\t%csent by: %c${JSON.stringify(sender)}`, 
     "color:green","color:white","color:green")
-
   BackgroundController.executeMessage(message, sendResponse)
 })
 

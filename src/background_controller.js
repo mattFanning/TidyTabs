@@ -28,6 +28,7 @@ importScripts('/src/sorting.js') /*
     console.log(`BackgroundController.execute\n\texecuting: %c${message}`, "color:green")
     let returnedValue = undefined
     switch(message) {
+    // tabs
       case "new_tab_in_selected_group":
         returnedValue = await BackgroundController.newTabInActiveGroup()
         break
@@ -35,6 +36,7 @@ importScripts('/src/sorting.js') /*
         returnedValue = await BackgroundController.newTabInNewGroup()
         break
 
+    // sort
       case "sort_highlighted_tabs":
         returnedValue = await BackgroundController.sortHighlightedTabs()
         break
@@ -42,6 +44,7 @@ importScripts('/src/sorting.js') /*
         returnedValue = await BackgroundController.sortAllTabs()
         break
 
+    // collapse
       case "collapse_all_groups_in_window":
         returnedValue = await BackgroundController.collapseAllGroupsInWindow()
         break
@@ -49,20 +52,26 @@ importScripts('/src/sorting.js') /*
         returnedValue = await BackgroundController.collapseAllGroups()
         break
 
+    // sweep
       case "sweep_groups_to_beginning":
         returnedValue = await BackgroundController.sweepGroupsToBeginning()
         break
       case "sweep_groups_to_end":
         returnedValue = await BackgroundController.sweepGroupsToEnd()
         break
-      
+
+    // auto collapse
       case "auto_collapse_groups_status":
         returnedValue = BackgroundController.getAutoCollapseStatus()
-        break
-
+        break  
       case "auto_collapse_groups_toggle":
         returnedValue = BackgroundController.toggleAutoCollapseStatus()
         break
+      case "auto_collapse_groups_callback":
+        const currentTab = await BackgroundController.getActiveTab()
+        console.log(`\tcurrentTab: %c${JSON.stringify(currentTab)}`, "color:yellow")
+        returnedValue = BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
+        break  
 
       default:
         console.error(`unknown command: %c${message}`, "color:red")
@@ -209,7 +218,7 @@ importScripts('/src/sorting.js') /*
   }
   
   /**
-   * Sweeps all groups to the first untabbed indexes while maintaining order.
+   * Sweeps all groups to the first un-tabbed indexes while maintaining order.
   */
   static async sweepGroupsToBeginning() {
     const groupIndexes = await BackgroundController.getTabGroupIndexesInCurrentWindow()
