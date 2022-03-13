@@ -78,10 +78,15 @@ class Popup {
       .append($led)  
       .append(`<b>${label}</b>`)
       .click(async () => {
-        const newStatus = await Promises.chrome.runtime.sendMessage(`${messageGroup}_toggle`)
+        const previousStatus = await Promises.chrome.runtime.sendMessage(`${messageGroup}_status`)
+        const previousColor = previousStatus ? 'green' : 'red'
+
+        await Promises.chrome.runtime.sendMessage(`${messageGroup}_toggle`)
+        const newStatus = await Promises.chrome.runtime.sendMessage(`${messageGroup}_status`)
+    
         const newColor = newStatus ? 'green' : 'red'
         $(`#${messageGroup}_led`)
-          .removeClass(`background_${ledColor}`)
+          .removeClass(`background_${previousColor}`)
           .addClass(`background_${newColor}`)
         await Promises.chrome.runtime.sendMessage(`${messageGroup}_callback`)
       })

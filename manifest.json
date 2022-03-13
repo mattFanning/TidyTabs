@@ -51,7 +51,7 @@
       "description": "Move all groups in current window to the end of the tab order."
     }
   },
-  "permissions": ["tabs", "tabGroups"],
+  "permissions": ["tabs", "tabGroups", "storage"],
   "action": {
     "default_popup": "popup/popup.html"
   }

@@ -13,20 +13,20 @@ chrome.commands.onCommand.addListener((command) => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(`chrome.runtime.onMessage.addListener\n\tmessage: %c${message}\n\t%csent by: %c${JSON.stringify(sender)}`, 
-    "color:green","color:white","color:green")
-  BackgroundController.executeMessage(message, sendResponse)
+    BackgroundController.executeMessage(message, sendResponse)
+
+    return true
 })
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Tidy Tabs! %cinstalled', "color:green")
 })
 
-chrome.tabs.onActivated.addListener(activeInfo=> {
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
   // Unchecked runtime.lastError: Tabs cannot be edited right now (user may be dragging a tab).
-  setTimeout(() => {
-    if(BackgroundController.getAutoCollapseStatus()) {
+  setTimeout(async () => {
+    if(await BackgroundController.getAutoCollapseStatus()) {
       BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
-  }, 100);
+  }, 100)
 })

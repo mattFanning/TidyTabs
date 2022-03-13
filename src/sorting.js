@@ -1,4 +1,4 @@
-importScripts('/src/wrappers.js');
+importScripts('/src/wrappers.js')
 
 /**
  * The rules and logic for sorting tabs.

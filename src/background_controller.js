@@ -8,15 +8,34 @@ importScripts('/src/sorting.js') /*
 */
  class BackgroundController {
   // messages
-  static AUTO_COLLAPSE_ENABLED = true;
+  
+  static async getAutoCollapseStatus() {
+    const KEY = "auto_collapse_groups_status"
+    const data = await Promises.chrome.storage.sync.get(KEY)
+    console.log(`\tFetch: %c${JSON.stringify(data)}`, "color:green")
 
-  static getAutoCollapseStatus() {
-    return BackgroundController.AUTO_COLLAPSE_ENABLED
+    if(Object.keys(data).length === 0) {
+      return false
+    }
+
+    return data[KEY]
   }
 
-  static toggleAutoCollapseStatus() {
-    BackgroundController.AUTO_COLLAPSE_ENABLED = !BackgroundController.AUTO_COLLAPSE_ENABLED
-    return BackgroundController.AUTO_COLLAPSE_ENABLED
+  static async toggleAutoCollapseStatus() {
+    const key = "auto_collapse_groups_status"
+    const status = await BackgroundController.getAutoCollapseStatus()
+    const payload = {[key] : !status}
+    console.log(`\tsetting to: %c${JSON.stringify(payload)}`, "color:green")
+    return await Promises.chrome.storage.sync.set({[key] : !status})
+  }
+
+  static async callbackAutoCollapseStatus() {
+    const status = await BackgroundController.getAutoCollapseStatus()
+    
+    if(status) {
+      const currentTab = await BackgroundController.getActiveTab()
+      return await BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
+    }
   }
 
   /**
@@ -62,15 +81,13 @@ importScripts('/src/sorting.js') /*
 
     // auto collapse
       case "auto_collapse_groups_status":
-        returnedValue = BackgroundController.getAutoCollapseStatus()
+        returnedValue = await BackgroundController.getAutoCollapseStatus()
         break  
       case "auto_collapse_groups_toggle":
-        returnedValue = BackgroundController.toggleAutoCollapseStatus()
+        returnedValue = await BackgroundController.toggleAutoCollapseStatus()
         break
       case "auto_collapse_groups_callback":
-        const currentTab = await BackgroundController.getActiveTab()
-        console.log(`\tcurrentTab: %c${JSON.stringify(currentTab)}`, "color:yellow")
-        returnedValue = BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
+        returnedValue = await BackgroundController.callbackAutoCollapseStatus()        
         break  
 
       default:
@@ -78,9 +95,10 @@ importScripts('/src/sorting.js') /*
     }
 
     if(callback) {
-      console.log(`\treturned value: %c${returnedValue}`, "color:green")
+      console.log(`\treturned value: %c${JSON.stringify(returnedValue)}\n`, "color:green")
       callback(returnedValue)
     }
+    return true
   }
 
   // tabs
@@ -154,7 +172,7 @@ importScripts('/src/sorting.js') /*
     if (tabs.length) {
       return tabs[0].index
     }
-    return 0;
+    return 0
   }
   
   static async stringifyAllTabs() {
@@ -227,7 +245,7 @@ importScripts('/src/sorting.js') /*
       if(a.index > b.index) {return -1} 
       if(a.index < b.index) {return 1}
       return 0
-    });
+    })
     //determine which index to move tabs to
     const index = await BackgroundController.getFirstUnpinnedTabIndex()
 

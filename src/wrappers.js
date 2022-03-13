@@ -15,11 +15,11 @@ Promises.chrome.tabs = class {
   static async get(tabId) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabs.get(tabId, tab=> resolve(tab));
+        chrome.tabs.get(tabId, tab=> resolve(tab))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
@@ -31,11 +31,11 @@ Promises.chrome.tabs = class {
   static async query(queryInfo) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabs.query(queryInfo, tabs=> resolve(tabs));
+        chrome.tabs.query(queryInfo, tabs=> resolve(tabs))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
@@ -47,11 +47,11 @@ Promises.chrome.tabs = class {
   static async group(options) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabs.group(options, groupId=> resolve(groupId));
+        chrome.tabs.group(options, groupId=> resolve(groupId))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
@@ -63,11 +63,11 @@ Promises.chrome.tabs = class {
   static async create(createProperties) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabs.create(createProperties, tab=> resolve(tab));
+        chrome.tabs.create(createProperties, tab=> resolve(tab))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
@@ -80,11 +80,11 @@ Promises.chrome.tabs = class {
   static async update(tabId, updateProperties) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabs.update(tabId, updateProperties, tab=> resolve(tab));
+        chrome.tabs.update(tabId, updateProperties, tab=> resolve(tab))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
@@ -99,13 +99,13 @@ Promises.chrome.tabs = class {
       try {
         chrome.tabs.sendMessage(tabId, message, options, response=> {
           if(chrome.runtime.lastError) //This eats the error so it doesn't show up in logs.
-            console.debug(chrome.runtime.lastError.message);
-          resolve(response);
-        });
+            console.debug(chrome.runtime.lastError.message)
+          resolve(response)
+        })
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 }
 
@@ -121,11 +121,11 @@ Promises.chrome.tabGroups = class {
   static async move(groupId, moveProperties) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabGroups.move(groupId, moveProperties, tabGroup=> resolve(tabGroup));
+        chrome.tabGroups.move(groupId, moveProperties, tabGroup=> resolve(tabGroup))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
   
   /**
@@ -137,11 +137,11 @@ Promises.chrome.tabGroups = class {
   static async query(queryInfo) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabGroups.query(queryInfo, tabGroups=> resolve(tabGroups));
+        chrome.tabGroups.query(queryInfo, tabGroups=> resolve(tabGroups))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
@@ -154,11 +154,11 @@ Promises.chrome.tabGroups = class {
   static async update(groupId, updateProperties) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.tabGroups.update(groupId, updateProperties, tabGroup=> resolve(tabGroup));
+        chrome.tabGroups.update(groupId, updateProperties, tabGroup=> resolve(tabGroup))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 }
 
@@ -173,11 +173,11 @@ Promises.chrome.windows = class {
   static async getCurrent(queryOptions) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.windows.getCurrent(queryOptions, window=> resolve(window));
+        chrome.windows.getCurrent(queryOptions, window=> resolve(window))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 }
 
@@ -189,58 +189,88 @@ Promises.chrome.runtime = class {
         const extensionId = undefined // optional my ass!
         chrome.runtime.sendMessage(extensionId, message, options, response => {
           if(chrome.runtime.lastError) //This eats the error so it doesn't show up in logs.
-            console.debug(chrome.runtime.lastError.message);
-          resolve(response);
-        });
+            console.debug(chrome.runtime.lastError.message)
+          resolve(response)
+        })
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+      return true
+    })
   }
 }
 
-Promises.chrome.unused = class {
-  static async chromeRuntimeSendMessage(message, options) {
-    return new Promise ((resolve, reject) => {
+// chrome.storage.sync
+Promises.chrome.storage = class {}
+Promises.chrome.storage.sync = class {
+  /**
+   * A promise wrapper for chrome.storage.sync.set.
+   * @param {object} items A payload of keys & values to store/update. 
+   * @returns {Promise<true|exception>} promise
+   * @resolve true if storing was sucessful. 
+   * @reject the exception thrown from storage attempt
+   * @see https://developer.chrome.com/docs/extensions/reference/storage/#type-StorageArea
+  */
+  static async set(items) {
+    return new Promise((resolve, reject)=> {
       try {
-        chrome.runtime.sendMessage(message, options, response => {
-          if(chrome.runtime.lastError) //This eats the error so it doesn't show up in logs.
-            console.debug(chrome.runtime.lastError.message);
-          resolve(response);
-        });
+        chrome.storage.sync.set(items, ()=> resolve(true))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
+   * A promise wrapper for chrome.storage.sync.get
+   * @param {string|string[]} keys The keys to fetch
+   * @returns {Promise<object|exception>} promise
+   * @resolve the key:value pairs of the requested keys
+   * @reject the exception thrown from fetch attempt
+   * @see https://developer.chrome.com/docs/extensions/reference/storage/#type-StorageArea
+  */
+  static async get(keys) {
+    return new Promise((resolve, reject)=> {
+      try {
+        chrome.storage.sync.get(keys, (items)=> resolve(items))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+}
+
+
+Promises.chrome.unused = class {
+  /**
    * A promise wrapper for chrome.scripting.executeScript.
-   * @param {object} injection a ScriptInjection object; see chrome.scripting.executeScript.
-   * @returns {Promise<object[]>} an InjectionResults object array; see chrome.scripting.executeScript.
+   * @param {object} injection a ScriptInjection object
+   * @see chrome.scripting.executeScript.
+   * @returns {Promise<object[]>} an InjectionResults object array see chrome.scripting.executeScript.
   */
   static async chromeScriptingExecuteScript(injection) {
     return new Promise((resolve, reject)=> {
       try {
-        chrome.scripting.executeScript(injection, response=> resolve(response));
+        chrome.scripting.executeScript(injection, response=> resolve(response))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 
   /**
    * A promise wrapper for chrome.scripting.insertCSS().
-   * @param {object} injection a ScriptInjection object; see chrome.scripting.executeScript.
-   * @returns {Promise<object[]>} an InjectionResults object array; see chrome.scripting.executeScript.
+   * @param {object} injection a ScriptInjection object
+   * @returns {Promise<object[]>} an InjectionResults object array 
+   * @see chrome.scripting.executeScript.
   */
   static async chromeScriptingInsertCSS(injection) {
     return new Promise((resolve, reject)=> {
       try{
-        chrome.scripting.insertCSS(injection, response=> resolve(response));
+        chrome.scripting.insertCSS(injection, response=> resolve(response))
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
+    })
   }
 }
