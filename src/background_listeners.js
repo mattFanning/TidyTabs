@@ -7,14 +7,11 @@ importScripts('/src/background_controller.js') /*
  * @listens chrome.commands.onCommand
 */
 chrome.commands.onCommand.addListener((command) => {
-  console.log(`chrome.commands.onCommand.addListener\n\tmessage: %c${command}\n\t%csent by: %ckeyboard commands`, 
-    "color:green","color:white","color:green")
   BackgroundController.executeMessage(command)
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     BackgroundController.executeMessage(message, sendResponse)
-
     return true
 })
 

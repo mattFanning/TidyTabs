@@ -8,35 +8,6 @@ importScripts('/src/sorting.js') /*
 */
  class BackgroundController {
   // messages
-  
-  static async getAutoCollapseStatus() {
-    const KEY = "auto_collapse_groups_status"
-    const data = await Promises.chrome.storage.sync.get(KEY)
-    console.log(`\tFetch: %c${JSON.stringify(data)}`, "color:green")
-
-    if(Object.keys(data).length === 0) {
-      return false
-    }
-
-    return data[KEY]
-  }
-
-  static async toggleAutoCollapseStatus() {
-    const key = "auto_collapse_groups_status"
-    const status = await BackgroundController.getAutoCollapseStatus()
-    const payload = {[key] : !status}
-    console.log(`\tsetting to: %c${JSON.stringify(payload)}`, "color:green")
-    return await Promises.chrome.storage.sync.set({[key] : !status})
-  }
-
-  static async callbackAutoCollapseStatus() {
-    const status = await BackgroundController.getAutoCollapseStatus()
-    
-    if(status) {
-      const currentTab = await BackgroundController.getActiveTab()
-      return await BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
-    }
-  }
 
   /**
    * Executes the message string's command 
@@ -62,6 +33,14 @@ importScripts('/src/sorting.js') /*
       case "sort_all_tabs":
         returnedValue = await BackgroundController.sortAllTabs()
         break
+
+    // remove
+      case "remove_dup_tabs_in_window":
+        returnedValue = await BackgroundController.removeDuplicateTabsInWindow()
+        break
+      case "remove_dup_tabs" :
+        returnedValue = await BackgroundController.removeDuplicateTabs()
+        break;
 
     // collapse
       case "collapse_all_groups_in_window":
@@ -151,6 +130,38 @@ importScripts('/src/sorting.js') /*
     const allTabs = await Promises.chrome.tabs.query({})
     for (const tab of allTabs) {
         await Sorting.executeOn(tab)
+    }
+  }
+
+  /**
+   * Removes duplicate tabs (same url) from the current window.
+  */
+  static async removeDuplicateTabsInWindow() {
+    // get all tabs in window
+    const tabs = await Promises.chrome.tabs.query({currentWindow: true})
+    await BackgroundController.removeDuplicateTabsFrom(tabs)
+    
+    return true;
+  }
+
+  /**
+   * Removes duplicate tabs (same url) from all windows.
+   *
+  */
+  static async removeDuplicateTabs() {
+    const tabs = await Promises.chrome.tabs.query({})
+    await BackgroundController.removeDuplicateTabsFrom(tabs)
+    return true;
+  }
+
+  static async removeDuplicateTabsFrom(tabs) {
+    const seenURLs = []
+    for(const tab of tabs) {
+      if(seenURLs.includes(tab.url)) {
+        await Promises.chrome.tabs.remove(tab.id)
+      } else {
+        seenURLs.push(tab.url)
+      }
     }
   }
 
@@ -281,6 +292,36 @@ importScripts('/src/sorting.js') /*
       }
     }
     return groupPositions
+  }
+
+  // autoCollapse
+  static async getAutoCollapseStatus() {
+    const KEY = "auto_collapse_groups_status"
+    const data = await Promises.chrome.storage.sync.get(KEY)
+    console.log(`\tFetch: %c${JSON.stringify(data)}`, "color:green")
+
+    if(Object.keys(data).length === 0) {
+      return false
+    }
+
+    return data[KEY]
+  }
+
+  static async toggleAutoCollapseStatus() {
+    const key = "auto_collapse_groups_status"
+    const status = await BackgroundController.getAutoCollapseStatus()
+    const payload = {[key] : !status}
+    console.log(`\tsetting to: %c${JSON.stringify(payload)}`, "color:green")
+    return await Promises.chrome.storage.sync.set({[key] : !status})
+  }
+
+  static async callbackAutoCollapseStatus() {
+    const status = await BackgroundController.getAutoCollapseStatus()
+    
+    if(status) {
+      const currentTab = await BackgroundController.getActiveTab()
+      return await BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
+    }
   }
 
   static async stringifyAllTabGroups() {

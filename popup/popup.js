@@ -9,20 +9,26 @@ class Popup {
       {label:'Highlighted Tabs', message:'sort_highlighted_tabs'},
       {label:'All Tabs', message:'sort_all_tabs'}] 
     })
-    const $collapse = await Popup.buttonGroup({color:'red', label:'Collapse', buttons:[
+    const $remove = await Popup.buttonGroup({color:'red', label:'Remove', buttons:[
+      {label:'Duplicate Tabs In Current Window', message:'remove_dup_tabs_in_window'},
+      {label:'Duplicate Tabs In All Windows', message:'remove_dup_tabs'}]
+    })
+    const $collapse = await Popup.buttonGroup({color:'yellow', label:'Collapse', buttons:[
       {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
       {label:'All Groups In All Windows', message:'collapse_all_groups'},
       {type: 'toggle', label:'Inactive Groups Automatically', messageGroup:'auto_collapse_groups'}] 
     })
-    const $sweep = await Popup.buttonGroup({color:'yellow', label:'Sweep', buttons:[
+    const $sweep = await Popup.buttonGroup({color:'green', label:'Sweep', buttons:[
       {label:'Groups To Beginning', message:'sweep_groups_to_beginning'},
       {label:'Groups To End', message:'sweep_groups_to_end'}] 
     })
+
     $("body").empty()
       .append($newTab)
       .append($sort)
+      .append($remove)
       .append($collapse)
-      .append($sweep)
+      .append($sweep)  
   }
 
   static async buttonGroup(buttonGroupOptions) {  

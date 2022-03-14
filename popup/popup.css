@@ -91,6 +91,11 @@ body {
   border-bottom: 5px solid black;
 }
 
+.button.button_hover_green {
+  border: 5px solid rgb(145, 198, 153);
+  border-bottom: 5px solid black;
+}
+
 .group_label {
   display: flex;
   align-items: center;
@@ -122,3 +127,4 @@ body {
 .border_blue {border-color:rgb(146, 182, 242);}
 .border_red {border-color:rgb(228, 144, 134);}
 .border_yellow {border-color:rgb(248, 213, 117);}
+.border_green {border-color:rgb(145, 198, 153);}
