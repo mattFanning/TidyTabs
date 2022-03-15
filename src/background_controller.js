@@ -30,11 +30,17 @@ importScripts('/src/sorting.js') /*
       case "sort_highlighted_tabs":
         returnedValue = await BackgroundController.sortHighlightedTabs()
         break
+      case "sort_all_tabs_in_window":
+        returnedValue = await BackgroundController.sortAllTabsInWindow()
+        break
       case "sort_all_tabs":
         returnedValue = await BackgroundController.sortAllTabs()
         break
 
     // remove
+      case "remove_highlighted_dup_tabs":
+        returnedValue = await BackgroundController.removeHighlightedDuplicateTabs()
+        break
       case "remove_dup_tabs_in_window":
         returnedValue = await BackgroundController.removeDuplicateTabsInWindow()
         break
@@ -86,7 +92,6 @@ importScripts('/src/sorting.js') /*
    * Called from background_listeners.js
   */
   static async newTabInActiveGroup() {
-    const tabGroups = await Promises.chrome.tabGroups.query({})
     const currentTab = await BackgroundController.getActiveTab()
     const {id, groupId} = currentTab
 
@@ -116,9 +121,16 @@ importScripts('/src/sorting.js') /*
   */
   static async sortHighlightedTabs() {
     const highlightedTabs = await BackgroundController.getHighlightedTabs()
-   
     for (const tab of highlightedTabs) {
         await Sorting.executeOn(tab)
+    }
+  }
+
+  static async sortAllTabsInWindow() {
+    // get all tabs in window
+    const tabs = await Promises.chrome.tabs.query({currentWindow: true})
+    for (const tab of tabs) {
+      await Sorting.executeOn(tab)
     }
   }
 
@@ -133,6 +145,12 @@ importScripts('/src/sorting.js') /*
     }
   }
 
+  static async removeHighlightedDuplicateTabs() {
+    const tabs = await BackgroundController.getHighlightedTabs()
+    await BackgroundController.removeDuplicateTabsFrom(tabs)
+    return true;
+  }
+  
   /**
    * Removes duplicate tabs (same url) from the current window.
   */

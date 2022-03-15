@@ -1,21 +1,62 @@
 class Popup {
 
   static async renderBody() {
+    const $viewController = await Popup.controller()
+    const $buttonPanel = await Popup.buttonPanel()
+    $("body").empty()
+      .append($viewController)
+      .append($buttonPanel)
+  }
+
+  static async controller() {
+    const color = 'purple'
+    const $controllerPanel = $("<div>", {class: `controller_panel`})
+    const $controllerGroup = $("<div>", {class: `controller_group border_${color}`})
+    $controllerGroup.empty()
+      .append(await Popup.controllerButton({color, label: 'Commands'}))
+      .append(await Popup.controllerButton({color, label: 'Other Stuff'}))
+    
+    $controllerPanel.empty()
+      .append($controllerGroup)
+
+    return $controllerPanel
+  }
+
+  static async controllerButton(buttonOptions) {
+    const {color, label, message} = buttonOptions
+    const hoveringClasses = `hover_background_${color}`
+    const $div = $("<div>", {"class": `controller_button background_button_grey`})
+    $div
+      .append(`<b>${label}</b>`)
+      .click(()=>{/*Promises.chrome.runtime.sendMessage(message)*/})
+      .hover(
+        function () { $(this).addClass(hoveringClasses) }, 
+        function () { $(this).removeClass(hoveringClasses) }
+      )
+
+    return $div
+  }
+
+  static async buttonPanel() {
+    const $buttonPanel = $("<div>", {class: `button_panel`})
+
     const $newTab = await Popup.buttonGroup({color:'grey', label:'New Tab', buttons:[
       {label:'In Active Group', message:'new_tab_in_selected_group'},
       {label:'In New Group', message:'new_tab_in_new_group'}] 
     })
     const $sort = await Popup.buttonGroup({color:'blue', label:'Sort', buttons:[
       {label:'Highlighted Tabs', message:'sort_highlighted_tabs'},
+      {label:'Tabs In Current Window', message:'sort_all_tabs_in_window'},
       {label:'All Tabs', message:'sort_all_tabs'}] 
     })
     const $remove = await Popup.buttonGroup({color:'red', label:'Remove', buttons:[
+      {label:'Highlighted Duplicate Tabs', message:'remove_highlighted_dup_tabs'},
       {label:'Duplicate Tabs In Current Window', message:'remove_dup_tabs_in_window'},
-      {label:'Duplicate Tabs In All Windows', message:'remove_dup_tabs'}]
+      {label:'Duplicate Tabs', message:'remove_dup_tabs'}]
     })
     const $collapse = await Popup.buttonGroup({color:'yellow', label:'Collapse', buttons:[
-      {label:'All Groups In Current Window', message:'collapse_all_groups_in_window'},
-      {label:'All Groups In All Windows', message:'collapse_all_groups'},
+      {label:'Groups In Current Window', message:'collapse_all_groups_in_window'},
+      {label:'All Groups', message:'collapse_all_groups'},
       {type: 'toggle', label:'Inactive Groups Automatically', messageGroup:'auto_collapse_groups'}] 
     })
     const $sweep = await Popup.buttonGroup({color:'green', label:'Sweep', buttons:[
@@ -23,12 +64,14 @@ class Popup {
       {label:'Groups To End', message:'sweep_groups_to_end'}] 
     })
 
-    $("body").empty()
+    $buttonPanel.empty()
       .append($newTab)
       .append($sort)
       .append($remove)
       .append($collapse)
-      .append($sweep)  
+      .append($sweep)
+    
+    return $buttonPanel
   }
 
   static async buttonGroup(buttonGroupOptions) {  
@@ -54,10 +97,9 @@ class Popup {
   }
 
   static button(buttonOptions) {
-    // console.log(JSON.stringify(buttonOptions))
     const {color, label, message} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
-    const $div = $("<div>", {"class": `button`})
+    const $div = $("<div>", {"class": `button background_button_grey`})
     $div
       .append(`<b>${label}</b>`)
       .click(()=>{Promises.chrome.runtime.sendMessage(message)})
@@ -73,7 +115,7 @@ class Popup {
     // console.log(JSON.stringify(buttonOptions))
     const {color, label, messageGroup} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
-    const $div = $("<div>", {"class": `button toggle_button`})
+    const $div = $("<div>", {"class": `button toggle_button background_button_grey`})
     
     // determine led color
     const status = await Promises.chrome.runtime.sendMessage(`${messageGroup}_status`)
