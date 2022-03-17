@@ -25,7 +25,7 @@ class Popup {
   static async controllerButton(buttonOptions) {
     const {color, label, message} = buttonOptions
     const hoveringClasses = `hover_background_${color}`
-    const $div = $("<div>", {"class": `controller_button background_button_grey`})
+    const $div = $("<div>", {"class": `clickable controller_button background_button_grey`})
     $div
       .append(`<b>${label}</b>`)
       .click(()=>{/*Promises.chrome.runtime.sendMessage(message)*/})
@@ -99,7 +99,7 @@ class Popup {
   static button(buttonOptions) {
     const {color, label, message} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
-    const $div = $("<div>", {"class": `button background_button_grey`})
+    const $div = $("<div>", {"class": `clickable button background_button_grey`})
     $div
       .append(`<b>${label}</b>`)
       .click(()=>{Promises.chrome.runtime.sendMessage(message)})
@@ -115,7 +115,7 @@ class Popup {
     // console.log(JSON.stringify(buttonOptions))
     const {color, label, messageGroup} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
-    const $div = $("<div>", {"class": `button toggle_button background_button_grey`})
+    const $div = $("<div>", {"class": `clickable button toggle_button background_button_grey`})
     
     // determine led color
     const status = await Promises.chrome.runtime.sendMessage(`${messageGroup}_status`)

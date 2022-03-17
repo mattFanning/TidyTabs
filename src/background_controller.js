@@ -172,6 +172,8 @@ importScripts('/src/sorting.js') /*
     return true;
   }
 
+  //TODO - this should respect the active tab.
+  // If tabs has 1 tab + 2 duplicates and the 3rd file is active, 1 & 2 should close not 2 & 3
   static async removeDuplicateTabsFrom(tabs) {
     const seenURLs = []
     for(const tab of tabs) {

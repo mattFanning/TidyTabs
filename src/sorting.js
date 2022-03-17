@@ -6,7 +6,7 @@ importScripts('/src/wrappers.js')
 class Sorting {
   static getRules() {
     return [
-      {address: "^https?://www.vai.com", groupProperties: {title: "Guitar", color: "grey"}},
+      {address: "^https?://www.vai.com", groupProperties: {title: "Guitar", color: "grey", collapsed: true}},
       {address: "^https?://developer.chrome.com", groupProperties: {title: "Chrome API"}},
       {address: "^https?://(git.soma.salesforce.com|github.com)", groupProperties: {title: "Git", color: "green"}},
       {address: "^https?://gus.lightning.force.com", groupProperties: {title: "Gus", color: "blue"}},
