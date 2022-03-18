@@ -172,15 +172,22 @@ importScripts('/src/sorting.js') /*
     return true;
   }
 
-  //TODO - this should respect the active tab.
-  // If tabs has 1 tab + 2 duplicates and the 3rd file is active, 1 & 2 should close not 2 & 3
   static async removeDuplicateTabsFrom(tabs) {
-    const seenURLs = []
+    let seenURLs = []  //  [{url: "http://www.x.com", id: 5, active: false}]
     for(const tab of tabs) {
-      if(seenURLs.includes(tab.url)) {
-        await Promises.chrome.tabs.remove(tab.id)
-      } else {
-        seenURLs.push(tab.url)
+      const searchResult = seenURLs.find(seenTab => seenTab.url === tab.url);
+      
+      if(searchResult) {
+        if(tab.active) {
+          seenURLs = seenURLs.filter(seenTab => seenTab.url !== searchResult.url)
+          seenURLs.push({url: tab.url, id: tab.id, active: tab.active})
+          await Promises.chrome.tabs.remove(searchResult.id)
+        } else {
+          await Promises.chrome.tabs.remove(tab.id)
+        }
+      } 
+      else {
+        seenURLs.push({url: tab.url, id: tab.id, active: tab.active})
       }
     }
   }
