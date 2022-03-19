@@ -1,0 +1,129 @@
+.commands_panel {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  height : 545px;
+  width: auto;
+  overflow: hidden;
+  
+  margin: 0px;
+  padding: 5px;
+  border: 2px solid black;
+  
+  background-color: black;
+}
+
+.button_group {
+  display: flex;
+  align-items: flex-end;
+  
+  height: 50px;
+  width: auto;
+  
+  border-radius: 5px;
+  border-bottom: 5px solid black;
+  border-left:   5px solid black;
+
+  margin-bottom: 5px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  height: 45px;
+  width: 100px;
+  outline: none;
+  
+  /* padding: 1px; */
+  padding-top: 1px;
+  padding-right: 1px;
+  padding-bottom: 1px;
+  padding-left: 1px;
+  
+  margin-right: 5px;
+  
+  border-radius: 5px 5px 0px 0px;
+}
+
+.toggle_button {
+  flex-direction: column;
+  align-items: start;
+}
+
+.toggle_led {
+  height: 10px;
+  width: 10px;
+  
+  margin-top: -2px;
+  /* margin-left: -1px; */
+  border: 2px inset;
+}
+
+.group_label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  height: inherit;
+  width: 100px;
+  
+  outline: none;
+  margin-right: 5px;
+  
+  border-right: 1px solid black;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+
+  font-size: 16px;
+}
+
+.button.button_hover_margins {
+  margin-bottom: -5px;
+  margin-left: -5px;
+  margin-right: 0px;
+}
+
+.button.button_hover_grey {
+  border: 5px solid rgb(220, 220, 220);
+  border-bottom: 5px solid black;
+}
+
+.button.button_hover_blue {
+  border: 5px solid rgb(146, 182, 242);
+  border-bottom: 5px solid black;
+}
+
+.button.button_hover_red {
+  border: 5px solid rgb(228, 144, 134);
+  border-bottom: 5px solid black;
+}
+
+.button.button_hover_yellow {
+  border: 5px solid rgb(248, 213, 117);
+  border-bottom: 5px solid black;
+}
+
+
+.button.button_hover_green {
+  border: 5px solid rgb(145, 198, 153);
+  border-bottom: 5px solid black;
+}
+
+.button.button_hover_purple {
+  border: 5px solid rgb(188, 143, 242);
+  border-bottom: 5px solid black;
+}
+
+.border_grey {border-color: rgb(220, 220, 220);}
+.border_blue {border-color:rgb(146, 182, 242);}
+.border_red {border-color:rgb(228, 144, 134);}
+.border_yellow {border-color:rgb(248, 213, 117);}
+.border_green {border-color:rgb(145, 198, 153);}
+.border_purple {border-color: rgb(188, 143, 242);}

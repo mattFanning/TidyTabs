@@ -1,0 +1,19 @@
+.sorting_panel {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  height : 545px;
+  width: auto;
+  overflow: hidden;
+  
+  margin: 0px;
+  padding: 5px;
+  border: 2px solid black;
+  
+  background-color: grey;
+}
+
+.sorting_list {
+  display: flex;
+}
