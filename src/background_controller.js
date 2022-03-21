@@ -73,7 +73,15 @@ importScripts('/src/sorting.js') /*
         break
       case "auto_collapse_groups_callback":
         returnedValue = await BackgroundController.callbackAutoCollapseStatus()        
-        break  
+        break
+
+    // fetches
+      case "get_sorting_rules" :
+        returnedValue = await BackgroundController.getSortingRules()
+        break
+      case "get_group_properties_keys":
+        returnedValue = await BackgroundController.getGroupPropertiesKeys()
+        break
 
       default:
         console.error(`unknown command: %c${message}`, "color:red")
@@ -355,5 +363,16 @@ importScripts('/src/sorting.js') /*
     const tabGroups = await Promises.chrome.tabGroups.query({})
     console.log(`%cAll Tab Groups:`, `color:green`)
     printArray(tabGroups)
+  }
+
+  //fetches
+  static async getSortingRules() {
+    const rules = Sorting.getRules()
+    return rules
+  }
+
+  static async getGroupPropertiesKeys() {
+    const keys = Sorting.getGroupPropertiesKeys()
+    return keys
   }
 }

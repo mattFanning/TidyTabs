@@ -23,7 +23,7 @@ class Popup {
     const $controllerGroup = $("<div>", {class: `controller_group border_${color}`})
     $controllerGroup.empty()
       .append(await Popup.controllerButton({id: 'commands_button', color, label: 'Commands', clickId: '#commands_panel'}))
-      .append(await Popup.controllerButton({id: 'sorting_button', color, label: 'Sorting', clickId: '#sorting_panel'}))
+      .append(await Popup.controllerButton({id: 'sorting_button', color, label: 'Sorting Rules', clickId: '#sorting_panel'}))
     
     $controllerPanel.empty()
       .append($controllerGroup)
