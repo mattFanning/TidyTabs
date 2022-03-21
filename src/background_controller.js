@@ -124,6 +124,12 @@ importScripts('/src/sorting.js') /*
     await Promises.chrome.tabs.group(groupOptions)
   }
 
+  /* TODO 
+    all sorts need to 
+    1. check if autoCollapseGroups is enabled
+    2. if so, execute collapseOtherGroupsInWindow()
+  */
+
   /**
    * Sorts the highlighted tabs by running each through all sorting rules
   */
