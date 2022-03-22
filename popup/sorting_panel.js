@@ -36,9 +36,9 @@ class SortingPanel {
   }
   static tableSubHeader() {
     const $tableRow = $('<tr>', {class: "header_row"})
-    $tableRow.html(`<th>Title</th>
-                    <th>Color</th>
-                    <th class= column_set_width>Collapsed</th>`)
+    $tableRow.html(`<th class=title_column_width>Title</th>
+                    <th class=color_column_width>Color</th>
+                    <th class=collapsed_column_width>Collapsed</th>`)
 
     return $tableRow
   }
@@ -79,8 +79,12 @@ class SortingPanel {
   }
 
   static tableFooter() {
-    const $tableRow = $('<tr>', {class: "header_row"})
-    $tableRow.html(`<td colspan=4 class='table_footer background_grey'>Button</td>`)
+    const $tableRow = $('<tr>', {class: "footer_row"})
+    $tableRow.html(`
+      <th colspan=4 class='footer_header'>
+      <div class="footer_button background_button_grey">^</div>
+      </th>
+    `)
     
     return $tableRow
   }

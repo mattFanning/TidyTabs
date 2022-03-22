@@ -135,17 +135,13 @@ importScripts('/src/sorting.js') /*
   */
   static async sortHighlightedTabs() {
     const highlightedTabs = await BackgroundController.getHighlightedTabs()
-    for (const tab of highlightedTabs) {
-        await Sorting.executeOn(tab)
-    }
+    await BackgroundController.sortTabsFrom(highlightedTabs)
   }
 
   static async sortAllTabsInWindow() {
     // get all tabs in window
     const tabs = await Promises.chrome.tabs.query({currentWindow: true})
-    for (const tab of tabs) {
-      await Sorting.executeOn(tab)
-    }
+    await BackgroundController.sortTabsFrom(tabs)
   }
 
   /**
@@ -154,8 +150,20 @@ importScripts('/src/sorting.js') /*
   */
   static async sortAllTabs() {
     const allTabs = await Promises.chrome.tabs.query({})
-    for (const tab of allTabs) {
+    await BackgroundController.sortTabsFrom(allTabs)
+  }
+
+  static async sortTabsFrom(tabs) {
+    const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
+
+    let tab = undefined
+    for (const tab of tabs) {
         await Sorting.executeOn(tab)
+    }
+
+    if(autoCollapseGroupEnabled) {
+      const activeInfo = {tabId: tab.id, windowId: tab.windowId}
+      await BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
   }
 

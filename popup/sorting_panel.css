@@ -28,8 +28,11 @@
 }
 
 .data_row {
-  border: 1px dotted black;
   font-family: monospace;
+}
+
+.footer_row {
+  background-color: rgb(220, 220, 220);
 }
 
 .data_row.hover {
@@ -44,10 +47,31 @@
   border-right: 1px solid black;
 }
 
-.column_set_width {
+.title_column_width {
+  width: 85px
+}
+
+.color_column_width {
+  width: 50px
+}
+
+.collapsed_column_width {
   width: 65px
 }
 
 .table_data {
   border: 1px solid black;
+}
+
+.footer_header {
+  padding: 0;
+}
+
+.footer_button {
+  display: flex;
+  width: 15px;
+  height: 15px;
+  border-right: 1px solid black;
+  align-items: center;
+  justify-content: center;
 }
