@@ -81,9 +81,11 @@ class SortingPanel {
   static tableFooter() {
     const $tableRow = $('<tr>', {class: "footer_row"})
     $tableRow.html(`
-      <th colspan=4 class='footer_header'>
-      <div class="footer_button background_button_grey">^</div>
+      <th class='footer_header'>
+        <div class="footer_button background_button_grey">&#11014</div>
+        <div class="footer_button background_button_grey">&#11015</div>
       </th>
+      <th colspan=3></th>
     `)
     
     return $tableRow

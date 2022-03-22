@@ -1,4 +1,3 @@
-importScripts('/src/utils.js')
 importScripts('/src/sorting.js') /*
   -> importScripts('/src/wrappers.js')
 */
@@ -124,12 +123,6 @@ importScripts('/src/sorting.js') /*
     await Promises.chrome.tabs.group(groupOptions)
   }
 
-  /* TODO 
-    all sorts need to 
-    1. check if autoCollapseGroups is enabled
-    2. if so, execute collapseOtherGroupsInWindow()
-  */
-
   /**
    * Sorts the highlighted tabs by running each through all sorting rules
   */
@@ -138,6 +131,9 @@ importScripts('/src/sorting.js') /*
     await BackgroundController.sortTabsFrom(highlightedTabs)
   }
 
+  /**
+   * Sorts all tabs in the current window by running each through all sorting rules
+  */
   static async sortAllTabsInWindow() {
     // get all tabs in window
     const tabs = await Promises.chrome.tabs.query({currentWindow: true})
@@ -167,6 +163,9 @@ importScripts('/src/sorting.js') /*
     }
   }
 
+  /**
+   * Removes duplicate tabs (same url) from the group of highlighted tabs.
+  */
   static async removeHighlightedDuplicateTabs() {
     const tabs = await BackgroundController.getHighlightedTabs()
     await BackgroundController.removeDuplicateTabsFrom(tabs)
@@ -238,7 +237,9 @@ importScripts('/src/sorting.js') /*
   static async stringifyAllTabs() {
     const tabs = await Promises.chrome.tabs.query({})
     console.log("%cAll Tabs:", "color:green")
-    printArray(tabs)
+    tabs.forEach(element => {
+      console.log(JSON.stringify(element))
+    })
   }
 
   // tabGroups
@@ -376,7 +377,9 @@ importScripts('/src/sorting.js') /*
   static async stringifyAllTabGroups() {
     const tabGroups = await Promises.chrome.tabGroups.query({})
     console.log(`%cAll Tab Groups:`, `color:green`)
-    printArray(tabGroups)
+    tabGroups.forEach(element => {
+      console.log(JSON.stringify(element))
+    })
   }
 
   //fetches

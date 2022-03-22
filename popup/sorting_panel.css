@@ -64,6 +64,8 @@
 }
 
 .footer_header {
+  display: flex;
+  flex-direction: row;
   padding: 0;
 }
 

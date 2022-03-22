@@ -1,5 +1,4 @@
 importScripts('/src/background_controller.js') /*
-  -> importScripts('/src/utils.js')
 */
 
 /**
