@@ -41,6 +41,7 @@ class Flagging {
     
     const windowUpdate = await Promises.chrome.windows.update(tab.windowId, {focused: true})
     const tabUpdate = await Promises.chrome.tabs.update(tab.id, {active: true})
+    return true
   }
 
   /**

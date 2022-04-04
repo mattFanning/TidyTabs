@@ -83,6 +83,20 @@ importScripts('/src/flagging.js') /*
         returnedValue = await BackgroundController.getGroupPropertiesKeys()
         break
 
+    // flagging
+      case "apply_flag_1":
+        returnedValue = await BackgroundController.applyFlag1()
+        break
+      case "go_to_flag_1":
+        returnedValue = await BackgroundController.goToFlag1()
+        break
+      case "apply_flag_2":
+        returnedValue = await BackgroundController.applyFlag2()
+        break
+      case "go_to_flag_2":
+        returnedValue = await BackgroundController.goToFlag2()
+        break
+
       default:
         console.error(`unknown command: %c${message}`, "color:red")
     }
@@ -373,6 +387,25 @@ importScripts('/src/flagging.js') /*
       const currentTab = await BackgroundController.getActiveTab()
       return await BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
     }
+  }
+
+  //flagging
+  static async applyFlag1() {
+    const currentTab = await BackgroundController.getActiveTab()
+    return await Flagging.flagTab(0, {tabId: currentTab.id})
+  }
+
+  static async goToFlag1() {
+    return await Flagging.activateFlag(0)
+  }
+
+  static async applyFlag2() {
+    const currentTab = await BackgroundController.getActiveTab()
+    return await Flagging.flagTab(1, {tabId: currentTab.id})
+  }
+
+  static async goToFlag2() {
+    return await Flagging.activateFlag(1)
   }
 
   static async stringifyAllTabGroups() {

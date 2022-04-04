@@ -9,29 +9,29 @@
   "commands": {
     "apply_flag_1": {
       "suggested_key": {
-        "default": "Alt+1",
-        "mac": "Alt+1"
+        "default": "Alt+Shift+1",
+        "mac": "Alt+Shift+1"
       },
       "description": "Flag 1: Apply to current tab"
     },
     "go_to_flag_1": {
       "suggested_key": {
-        "default": "Alt+Shift+1",
-        "mac": "Alt+Shift+1"
+        "default": "Alt+1",
+        "mac": "Alt+1"
       },
       "description": "Flag 1: Switch to flagged tab"
     },
     "apply_flag_2": {
       "suggested_key": {
-        "default": "Alt+2",
-        "mac": "Alt+2"
+        "default": "Alt+Shift+2",
+        "mac": "Alt+Shift+2"
       },
       "description": "Flag 2: Apply to current tab"
     },
     "go_to_flag_2": {
       "suggested_key": {
-        "default": "Alt+Shift+2",
-        "mac": "Alt+Shift+2"
+        "default": "Alt+2",
+        "mac": "Alt+2"
       },
       "description": "Flag 2: Switch to flagged tab"
     }
