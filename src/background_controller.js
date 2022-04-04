@@ -1,4 +1,5 @@
-importScripts('/src/sorting.js') /*
+importScripts('/src/sorting.js')
+importScripts('/src/flagging.js') /*
   -> importScripts('/src/wrappers.js')
 */
 

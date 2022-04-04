@@ -15,7 +15,12 @@ Promises.chrome.tabs = class {
   static async get(tabId) {
     return new Promise((resolve, reject) => {
       try {
-        chrome.tabs.get(tabId, tab=> resolve(tab))
+        chrome.tabs.get(tabId, tab => {
+          if(chrome.runtime.lastError) {
+            console.log(`%cFailed to get tabId: ${tabId}`, "color:red")
+          }
+          resolve(tab)
+        })
       } catch (e) {
         reject(e)
       }
@@ -195,6 +200,19 @@ Promises.chrome.windows = class {
       }
     })
   }
+
+  /**
+   * update
+   */
+  static async update(windowId, updateInfo) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.windows.update(windowId, updateInfo, window => resolve(window))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
 }
 
 // chrome.runtime
@@ -249,6 +267,43 @@ Promises.chrome.storage.sync = class {
     return new Promise((resolve, reject) => {
       try {
         chrome.storage.sync.get(keys, (items) => resolve(items))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+}
+Promises.chrome.storage.local = class {
+  /**
+   * A promise wrapper for chrome.storage.local.set.
+   * @param {object} items A payload of keys & values to store/update. 
+   * @returns {Promise<true|exception>} promise
+   * @resolve true if storing was sucessful. 
+   * @reject the exception thrown from storage attempt
+   * @see https://developer.chrome.com/docs/extensions/reference/storage/#type-StorageArea
+  */
+   static async set(items) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.set(items, () => resolve(true))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  /**
+   * A promise wrapper for chrome.storage.local.get
+   * @param {string|string[]} keys The keys to fetch
+   * @returns {Promise<object|exception>} promise
+   * @resolve the key:value pairs of the requested keys
+   * @reject the exception thrown from fetch attempt
+   * @see https://developer.chrome.com/docs/extensions/reference/storage/#type-StorageArea
+  */
+  static async get(keys) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.get(keys, (items) => resolve(items))
       } catch (e) {
         reject(e)
       }

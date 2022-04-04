@@ -24,5 +24,5 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     if(await BackgroundController.getAutoCollapseStatus()) {
       BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
-  }, 100)
+  }, 500)
 })

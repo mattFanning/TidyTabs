@@ -7,48 +7,33 @@
     "service_worker": "background_main.js"
   },
   "commands": {
-    "new_tab_in_selected_group": {
+    "apply_flag_1": {
       "suggested_key": {
-        "default": "Alt+T",
-        "mac": "Alt+T"
+        "default": "Alt+1",
+        "mac": "Alt+1"
       },
-      "description": "Opens a new tab in the same group as the active tab."
+      "description": "Flag 1: Apply to current tab"
     },
-    "new_tab_in_new_group": {
+    "go_to_flag_1": {
       "suggested_key": {
-        "default": "Alt+G",
-        "mac": "Alt+G"
+        "default": "Alt+Shift+1",
+        "mac": "Alt+Shift+1"
       },
-      "description": "Opens a new tab in a new group"
+      "description": "Flag 1: Switch to flagged tab"
     },
-
-    "sort_highlighted_tabs": {
+    "apply_flag_2": {
       "suggested_key": {
-        "default": "Alt+S",
-        "mac": "Alt+S"
+        "default": "Alt+2",
+        "mac": "Alt+2"
       },
-      "description": "Sorts the highlighted tabs.  This only affects tabs meeting a sorting criteria."
+      "description": "Flag 2: Apply to current tab"
     },
-    "sort_all_tabs": {
+    "go_to_flag_2": {
       "suggested_key": {
-        "default": "Alt+Shift+S",
-        "mac": "Alt+Shift+S"
+        "default": "Alt+Shift+2",
+        "mac": "Alt+Shift+2"
       },
-      "description": "Sorts all tabs.  This only affects tabs meeting a sorting criteria."
-    },
-
-    "collapse_all_groups_in_window" : {
-      "description": "Collapse all open groups in the active tab's window."
-    },
-    "collapse_all_groups" : {
-      "description": "Collapse all open groups in all windows."
-    },
-
-    "sweep_groups_to_beginning" : {
-      "description": "Move all groups in current window to the beginning of the tab order."
-    },
-    "sweep_groups_to_end" : {
-      "description": "Move all groups in current window to the end of the tab order."
+      "description": "Flag 2: Switch to flagged tab"
     }
   },
   "permissions": ["tabs", "tabGroups", "storage"],
