@@ -4,11 +4,10 @@ importScripts('/src/wrappers.js')
  * The rules and logic for sorting tabs.
  */
 class Sorting {
-  static getGroupPropertiesKeys() {
-    return ["title", "color", "collapsed"]
-  }
+  static #STORE_KEY = "sorting_rules"
+  static GROUP_PROPERTY_KEYS = ["title", "color", "collapsed"]
   
-  static getRules() {
+  static getRulesOLD() {
     return [
       {address: "^https?://www.vai.com", groupProperties: {title: "Guitar", color: "grey", collapsed: true}},
       {address: "^https?://developer.chrome.com", groupProperties: {title: "Chrome API", color: "purple"}},
@@ -17,9 +16,33 @@ class Sorting {
       {address: "^chrome://extensions", groupProperties: {title: "🧩", color: "red"}},
       {address: "^https?://swarm.soma.salesforce.com", groupProperties: {title: "swarm", color: "yellow"}},
       {address: "^https?://api.jquery.com", groupProperties: {title: "jQuery"}},
-      {address: `^https?://(sfciteam.sfci.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/|a360-qualityci.slb.sfdc.net/)`, groupProperties: {title: "Jenkins", color: "yellow"}}
+      {address: `^https?://(sfciteam.sfci.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/|a360-qualityci.slb.sfdc.net/)`, groupProperties: {title: "Jenkins", color: "orange"}}
     ]
   }
+  /**
+   * Fetches the rules from storage.
+   * @async
+   * @returns {SortingRule[]} The fetched rule set
+   */
+  static async getRules() {
+    const response = await Promises.chrome.storage.sync.get(Sorting.#STORE_KEY)
+    if(Object.keys(response).length <= 0) {
+      const emptyRules = []
+      return emptyRules
+    }
+    return response[Sorting.#STORE_KEY]
+  }
+
+  /**
+   * Stores the argument ruleset
+   * @param {SortingRule[]} rules the ruleset to store
+   * @returns {boolean} the result of chrome.storage.sync
+  */
+  static async setRules(rules) {
+    const payload = {[Sorting.#STORE_KEY] : rules}
+    return await Promises.chrome.storage.sync.set(payload)
+  }
+
   /**
    * Executes the sorting functionality on the given tab.
    * @param {object} Tab see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
@@ -64,3 +87,19 @@ class Sorting {
     }
   }
 }
+
+/**
+ * A payload containing a regex rule for tab matching, 
+ * and a GroupProperties payload for group matching / creation.
+ * @typedef {object} SortingRule
+ * @property {string} address - the regex to match against a tab's url.
+ * @property {GroupProperties} groupProperties - the payload of group info for creation and sorting.
+ */
+
+/**
+ * A payload of info for group creation / matching during the sorting process.
+ * @typedef {object} GroupProperties
+ * @property {string} title
+ * @property {string} [color]
+ * @property {boolean} [collapsed]
+ */

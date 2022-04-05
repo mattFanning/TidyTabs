@@ -30,11 +30,13 @@
 }
 
 .data_row.hover {
-  background-color: rgba(188, 143, 242, .5);
+  /* background-color: rgba(188, 143, 242, .5); */
+  background-color: rgba(170, 255, 0, .5)
 }
 
 .data_row.selected {
-  background-color: rgba(188, 143, 242, 1);
+  /* background-color: rgba(188, 143, 242, 1); */
+  background-color: rgb(170, 255, 0);
 }
 
 .footer_row {

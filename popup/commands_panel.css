@@ -121,9 +121,27 @@
   border-bottom: 5px solid black;
 }
 
+.button.button_hover_pink {
+  border: 5px solid rgb(240, 146, 200);
+  border-bottom: 5px solid black;
+}
+
+.button.button_hover_cyan {
+  border: 5px solid rgb(143, 215, 233);
+  border-bottom: 5px solid black;
+}
+
+.button.button_hover_orange {
+  border: 5px solid rgb(241, 175, 122);
+  border-bottom: 5px solid black;
+}
+
 .border_grey {border-color: rgb(220, 220, 220);}
 .border_blue {border-color:rgb(146, 182, 242);}
 .border_red {border-color:rgb(228, 144, 134);}
 .border_yellow {border-color:rgb(248, 213, 117);}
 .border_green {border-color:rgb(145, 198, 153);}
 .border_purple {border-color: rgb(188, 143, 242);}
+.border_pink {border-color: rgb(240, 146, 200);}
+.border_cyan {border-color: rgb(143, 215, 233);}
+.border_orange {border-color: rgb(241, 175, 122);}

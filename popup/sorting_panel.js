@@ -18,8 +18,9 @@ class SortingPanel {
       .append($tableSubHeader)
 
     const sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
-    for(const rule of sortingRules) {
-      const $tableRow = await SortingPanel.tableDataRow(rule)
+    for(let i = 0; i < sortingRules.length; i++) {
+      const rule = sortingRules[i]
+      const $tableRow = await SortingPanel.tableDataRow(rule, i)
       $table.append($tableRow)
     }
     const $tableFooter = SortingPanel.tableFooter()
@@ -43,7 +44,7 @@ class SortingPanel {
     return $tableRow
   }
 
-  static async tableDataRow(sortingRule) {
+  static async tableDataRow(sortingRule, index) {
     const {address, groupProperties} = sortingRule
     const keys = await Promises.chrome.runtime.sendMessage("get_group_properties_keys")
 
@@ -55,13 +56,14 @@ class SortingPanel {
 
     const hoveringClass = `hover`
     const selectionClass = 'selected'
-    const $tableRow = $('<tr>', {class: "data_row"})
+    const $tableRow = $('<tr>', {class: "clickable data_row"})
     $tableRow
       .html(`<td class='border-right'>${address}</td>
              <td class='border-right'>${groupProperties.title}</td>
              <td class='border-right background_${groupProperties.color}'>${groupProperties.color}</td>
              <td class=''>${groupProperties.collapsed}</td>`
       )
+      .attr("data-index", index)
       .hover(
         function () { $(this).addClass(hoveringClass) }, 
         function () { $(this).removeClass(hoveringClass) }
@@ -84,8 +86,8 @@ class SortingPanel {
     $padding_cell
       .attr('colspan', 3)
     $button_cell
-      .append(SortingPanel.footerButton('&#11014'))
-      .append(SortingPanel.footerButton('&#11015'))
+      .append(SortingPanel.footerButton({label: '&#11014', message: 'up'}))
+      .append(SortingPanel.footerButton({label: '&#11015', message: 'down'}))
     $tableRow
       .append($button_cell)
       .append($padding_cell)
@@ -93,9 +95,31 @@ class SortingPanel {
     return $tableRow
   }
 
-  static footerButton(label) {
-    const $button = $('<div>', {class: 'footer_button background_button_grey'})
-    $button.html(label)
+  static footerButton(buttonOptions) {
+    const {label, message} = buttonOptions
+    // const hoveringClasses = ``
+    const $button = $('<div>', {class: 'clickable footer_button background_button_grey'})
+    $button
+      .html(label)
+      .click(()=>{SortingPanel.#moveSelectedRow(message)})
     return $button
+  }
+
+  static #moveSelectedRow(message) {
+    switch(message) {
+      case 'up' :
+        const result = $('tr.selected')
+        if(result.length) {
+          // we have selection
+          console.log("Up found selection")
+
+        }
+        break
+      case 'down' :
+        console.log("you clicked down")
+        break
+      default:
+        break
+    }
   }
 }

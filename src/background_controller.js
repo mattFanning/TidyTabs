@@ -85,16 +85,28 @@ importScripts('/src/flagging.js') /*
 
     // flagging
       case "apply_flag_1":
-        returnedValue = await BackgroundController.applyFlag1()
+        returnedValue = await BackgroundController.applyFlag(1)
         break
       case "go_to_flag_1":
-        returnedValue = await BackgroundController.goToFlag1()
+        returnedValue = await BackgroundController.goToFlag(1)
         break
       case "apply_flag_2":
-        returnedValue = await BackgroundController.applyFlag2()
+        returnedValue = await BackgroundController.applyFlag(2)
         break
       case "go_to_flag_2":
-        returnedValue = await BackgroundController.goToFlag2()
+        returnedValue = await BackgroundController.goToFlag(2)
+        break
+      case "apply_flag_3":
+        returnedValue = await BackgroundController.applyFlag(3)
+        break
+      case "go_to_flag_3":
+        returnedValue = await BackgroundController.goToFlag(3)
+        break
+      case "apply_flag_4":
+        returnedValue = await BackgroundController.applyFlag(4)
+        break
+      case "go_to_flag_4":
+        returnedValue = await BackgroundController.goToFlag(4)
         break
 
       default:
@@ -168,7 +180,7 @@ importScripts('/src/flagging.js') /*
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
 
     let tab = undefined
-    for (const tab of tabs) {
+    for (tab of tabs) {
         await Sorting.executeOn(tab)
     }
 
@@ -389,24 +401,17 @@ importScripts('/src/flagging.js') /*
     }
   }
 
-  //flagging
-  static async applyFlag1() {
+  // flagging
+  static async applyFlag(flagNumber) {
     const currentTab = await BackgroundController.getActiveTab()
-    return await Flagging.flagTab(0, {tabId: currentTab.id})
+    // flags stored with 0-based indexing, but activated with 1-based.
+    return await Flagging.flagTab(flagNumber -1, {tabId: currentTab.id})  
   }
 
-  static async goToFlag1() {
-    return await Flagging.activateFlag(0)
-  }
-
-  static async applyFlag2() {
-    const currentTab = await BackgroundController.getActiveTab()
-    return await Flagging.flagTab(1, {tabId: currentTab.id})
-  }
-
-  static async goToFlag2() {
-    return await Flagging.activateFlag(1)
-  }
+  static async goToFlag(flagNumber) {
+    // flags stored with 0-based indexing, but activated with 1-based.
+    return await Flagging.activateFlag(flagNumber -1) 
+   }
 
   static async stringifyAllTabGroups() {
     const tabGroups = await Promises.chrome.tabGroups.query({})
@@ -423,7 +428,7 @@ importScripts('/src/flagging.js') /*
   }
 
   static async getGroupPropertiesKeys() {
-    const keys = Sorting.getGroupPropertiesKeys()
+    const keys = Sorting.GROUP_PROPERTY_KEYS
     return keys
   }
 }

@@ -34,6 +34,18 @@
         "mac": "Alt+2"
       },
       "description": "Flag 2: Switch to flagged tab"
+    },
+    "apply_flag_3": {
+      "description": "Flag 3: Apply to current tab"
+    },
+    "go_to_flag_3": {
+      "description": "Flag 3: Switch to flagged tab"
+    },
+    "apply_flag_4": {
+      "description": "Flag 4: Apply to current tab"
+    },
+    "go_to_flag_4": {
+      "description": "Flag 4: Switch to flagged tab"
     }
   },
   "permissions": ["tabs", "tabGroups", "storage"],
