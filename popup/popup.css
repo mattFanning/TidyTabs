@@ -32,6 +32,11 @@ b {
   cursor: pointer;
 }
 
+.disabled {
+  color: rgb(163, 161, 161);
+  cursor: default;
+}
+
 .controller_panel {
   display: flex;
   flex-direction: column;

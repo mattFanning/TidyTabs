@@ -209,7 +209,7 @@ importScripts('/src/flagging.js') /*
     
     return true;
   }
-
+  
   /**
    * Removes duplicate tabs (same url) from all windows.
    *
@@ -224,7 +224,7 @@ importScripts('/src/flagging.js') /*
     let seenURLs = []  //  [{url: "http://www.x.com", id: 5, active: false}]
     for(const tab of tabs) {
       const searchResult = seenURLs.find(seenTab => seenTab.url === tab.url);
-      
+      // BUG - should respect focussed window when: multiple windows, each with duplicate active tab
       if(searchResult) {
         if(tab.active) {
           seenURLs = seenURLs.filter(seenTab => seenTab.url !== searchResult.url)

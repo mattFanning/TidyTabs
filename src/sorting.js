@@ -6,7 +6,7 @@ importScripts('/src/wrappers.js')
 class Sorting {
   static #STORE_KEY = "sorting_rules"
   static GROUP_PROPERTY_KEYS = ["title", "color", "collapsed"]
-  
+
   static getRulesOLD() {
     return [
       {address: "^https?://www.vai.com", groupProperties: {title: "Guitar", color: "grey", collapsed: true}},
@@ -16,9 +16,12 @@ class Sorting {
       {address: "^chrome://extensions", groupProperties: {title: "🧩", color: "red"}},
       {address: "^https?://swarm.soma.salesforce.com", groupProperties: {title: "swarm", color: "yellow"}},
       {address: "^https?://api.jquery.com", groupProperties: {title: "jQuery"}},
-      {address: `^https?://(sfciteam.sfci.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/|a360-qualityci.slb.sfdc.net/)`, groupProperties: {title: "Jenkins", color: "orange"}}
+      {address: `^https?://(sfciteam.sfci.buildndeliver-s.aws-esvc1-useast2.aws.sfdc.cl/|a360-qualityci.slb.sfdc.net/)`, groupProperties: {title: "Jenkins", color: "pink"}},
+      {address: `^https://confluence.internal.salesforce.com`, groupProperties: {title: "Confluence", color: "cyan"}},
+      {address: `^https?://salesforce.quip.com`, groupProperties: {title: "Quip", color: "orange"}},
     ]
   }
+
   /**
    * Fetches the rules from storage.
    * @async
@@ -49,7 +52,7 @@ class Sorting {
   */
   static async executeOn(tab) {
     const {id, url, groupId, windowId} = tab
-    const sortRules = Sorting.getRules()
+    const sortRules = await Sorting.getRules()
 
     // run tab against each rule
     for (const rule of sortRules) {
