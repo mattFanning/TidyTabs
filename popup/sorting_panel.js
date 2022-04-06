@@ -81,6 +81,36 @@ class SortingPanel {
     return $tableRow
   }
 
+  static async #moveSelectedRow(message) {
+    if(!["up", "down"].includes(message)) {
+      return 
+    }
+
+    const result = $('tr.selected')
+    if(result.length) {
+      // we have selection
+      const index = parseInt(result.first().attr('data-index'))
+      let sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
+      const movingRule = sortingRules[index]
+      const toIndex = message === "up" ? index -1 : index + 1
+      
+      sortingRules.splice(index, 1)
+      sortingRules.splice(toIndex, 0, movingRule)
+      console.log("check it")
+      //store
+
+      //redraw
+    }
+  }
+
+  static #GROUP_PROPERTY_KEYS = undefined
+  static async #getGroupPropertyKeys() {
+    if(SortingPanel.#GROUP_PROPERTY_KEYS == undefined) {
+      SortingPanel.#GROUP_PROPERTY_KEYS = await Promises.chrome.runtime.sendMessage("get_group_properties_keys")
+    }
+    return SortingPanel.#GROUP_PROPERTY_KEYS
+  }
+
   static #tableFooter() {
     const $tableRow = $('<tr>', {class: "footer_row"})
     const $button_cell = $('<th>', {class: 'footer_button_cell thick_border_top'})
@@ -105,55 +135,29 @@ class SortingPanel {
     $button
       .html(label)
       .prop('disabled',true).addClass('disabled')
-      .click(()=>{SortingPanel.#moveSelectedRow(message)})
+      .click(()=>{
+        // TODO pick method based on message.  ex: + - for add / remove
+        SortingPanel.#moveSelectedRow(message)
+      })
     return $button
   }
 
   static #footerButtonManagement(currentIndex, totalIndexes) {
     if (currentIndex === 0) {
-      console.log('Disabling the up arrow')
+      // up: disabled, down: enabled
       $('#footer_button_up').prop('disabled',true).addClass('disabled')
       $('#footer_button_down').prop('disabled',false).removeClass('disabled')
     }
     else if(currentIndex === totalIndexes -1) {
-      console.log('Disabling the down arrow')
+      // up: enabled, down: disabled
       $('#footer_button_up').prop('disabled',false).removeClass('disabled')
       $('#footer_button_down').prop('disabled',true).addClass('disabled')
     }
     else {
+      // up: enabled, down: enabled
       $('#footer_button_up').prop('disabled',false).removeClass('disabled')
       $('#footer_button_down').prop('disabled',false).removeClass('disabled')
     }
   }
-  
-  static #GROUP_PROPERTY_KEYS = undefined
-  static async #getGroupPropertyKeys() {
-    if(SortingPanel.#GROUP_PROPERTY_KEYS == undefined) {
-      SortingPanel.#GROUP_PROPERTY_KEYS = await Promises.chrome.runtime.sendMessage("get_group_properties_keys")
-    }
-    return SortingPanel.#GROUP_PROPERTY_KEYS
-  }
 
-  static #moveSelectedRow(message) {
-    switch(message) {
-      case 'up' :
-        const result = $('tr.selected')
-        if(result.length) {
-          // we have selection
-          const index = result.first().attr('data-index')
-          console.log(`Up found selection with index: ${index}`)
-          //if index == 0, we can't go up
-
-          //get Rules, pop our index, place at index -1, save rules
-
-          //redraw
-        }
-        break
-      case 'down' :
-        console.log("you clicked down")
-        break
-      default:
-        break
-    }
-  }
 }
