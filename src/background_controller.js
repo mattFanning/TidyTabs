@@ -11,10 +11,19 @@ importScripts('/src/flagging.js') /*
 
   /**
    * Executes the message string's command 
-   * @param {string} message the command to execute
+   * @param {string|object} input string:the message to execute object: {message:'', arg1:{}}
    * @param {object} callback? the callback method to pass back values.  Optional
   */
-  static async executeMessage(message, callback) {
+  static async executeMessage(input, callback) {
+    let message = undefined
+    if(typeof input === "string") {
+      message = input
+    } else if(typeof input === "object") {
+      message = input['message']
+    } else {
+      return
+    }
+
     console.log(`BackgroundController.execute\n\texecuting: %c${message}`, "color:green")
     let returnedValue = undefined
     switch(message) {
@@ -76,11 +85,14 @@ importScripts('/src/flagging.js') /*
         break
 
     // fetches
+      case "set_sorting_rules" :
+        returnedValue = await Sorting.setRules(input['arg1'])
+        break
       case "get_sorting_rules" :
-        returnedValue = await BackgroundController.getSortingRules()
+        returnedValue = await Sorting.getRules()
         break
       case "get_group_properties_keys":
-        returnedValue = await BackgroundController.getGroupPropertiesKeys()
+        returnedValue = Sorting.getGroupPropertyKeys()
         break
 
     // flagging
@@ -419,16 +431,5 @@ importScripts('/src/flagging.js') /*
     tabGroups.forEach(element => {
       console.log(JSON.stringify(element))
     })
-  }
-
-  //fetches
-  static async getSortingRules() {
-    const rules = Sorting.getRules()
-    return rules
-  }
-
-  static async getGroupPropertiesKeys() {
-    const keys = Sorting.GROUP_PROPERTY_KEYS
-    return keys
   }
 }

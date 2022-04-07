@@ -5,7 +5,7 @@ importScripts('/src/wrappers.js')
  */
 class Sorting {
   static #STORE_KEY = "sorting_rules"
-  static GROUP_PROPERTY_KEYS = ["title", "color", "collapsed"]
+  static #GROUP_PROPERTY_KEYS = ["title", "color", "collapsed"]
 
   static getRulesOLD() {
     return [
@@ -88,6 +88,10 @@ class Sorting {
         }
       } 
     }
+  }
+
+  static getGroupPropertyKeys() {
+    return Sorting.#GROUP_PROPERTY_KEYS
   }
 }
 

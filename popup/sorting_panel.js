@@ -8,8 +8,18 @@ class SortingPanel {
     return $sortingPanel
   }
 
+  static async #refreshTable(selectIndex) {
+    const $refreshedTable = await SortingPanel.#table()
+    $('#sorting_rules_table').replaceWith($refreshedTable)
+    
+    const $rowToReSelect = $(`tr[data-index="${selectIndex}"]`)
+    if($rowToReSelect.length !== 0) {
+      $rowToReSelect.click()
+    }
+  }
+
   static async #table() {
-    const $table = $("<table>", {class: 'sorting_table not_editable background_grey'})
+    const $table = $("<table>", {id: 'sorting_rules_table', class: 'sorting_table not_editable background_grey'})
     const $tableHeader = SortingPanel.#tableHeader()
     const $tableSubHeader = SortingPanel.#tableSubHeader()
     
@@ -92,14 +102,13 @@ class SortingPanel {
       const index = parseInt(result.first().attr('data-index'))
       let sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
       const movingRule = sortingRules[index]
-      const toIndex = message === "up" ? index -1 : index + 1
       
+      const toIndex = message === "up" ? index -1 : index + 1
       sortingRules.splice(index, 1)
       sortingRules.splice(toIndex, 0, movingRule)
-      console.log("check it")
-      //store
-
-      //redraw
+      
+      await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
+      await SortingPanel.#refreshTable(toIndex)
     }
   }
 
@@ -119,8 +128,12 @@ class SortingPanel {
     $padding_cell
       .attr('colspan', 3)
     $button_cell
-      .append(SortingPanel.#footerButton({label: '&#11014', message: 'up'}))
-      .append(SortingPanel.#footerButton({label: '&#11015', message: 'down'}))
+      .append(SortingPanel.#footerButton({
+        label: '&#11014', message: 'up', clickMethod: () => SortingPanel.#moveSelectedRow('up')
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#11015', message: 'down', clickMethod: ()=> SortingPanel.#moveSelectedRow('down')
+      }))
     $tableRow
       .append($button_cell)
       .append($padding_cell)
@@ -129,34 +142,34 @@ class SortingPanel {
   }
 
   static #footerButton(buttonOptions) {
-    const {label, message} = buttonOptions
+    const {label, message, clickMethod} = buttonOptions
     // const hoveringClasses = ``
     const $button = $('<button>', {id: `footer_button_${message}`, class: 'clickable footer_button background_button_grey'})
     $button
       .html(label)
       .prop('disabled',true).addClass('disabled')
-      .click(()=>{
-        // TODO pick method based on message.  ex: + - for add / remove
-        SortingPanel.#moveSelectedRow(message)
-      })
+      .click(() => clickMethod())
     return $button
   }
 
   static #footerButtonManagement(currentIndex, totalIndexes) {
+    const $up = $('#footer_button_up')
+    const $down = $('#footer_button_down')
+    
     if (currentIndex === 0) {
       // up: disabled, down: enabled
-      $('#footer_button_up').prop('disabled',true).addClass('disabled')
-      $('#footer_button_down').prop('disabled',false).removeClass('disabled')
+      $up.prop('disabled',true).addClass('disabled')
+      $down.prop('disabled',false).removeClass('disabled')
     }
     else if(currentIndex === totalIndexes -1) {
       // up: enabled, down: disabled
-      $('#footer_button_up').prop('disabled',false).removeClass('disabled')
-      $('#footer_button_down').prop('disabled',true).addClass('disabled')
+      $up.prop('disabled',false).removeClass('disabled')
+      $down.prop('disabled',true).addClass('disabled')
     }
     else {
       // up: enabled, down: enabled
-      $('#footer_button_up').prop('disabled',false).removeClass('disabled')
-      $('#footer_button_down').prop('disabled',false).removeClass('disabled')
+      $up.prop('disabled',false).removeClass('disabled')
+      $down.prop('disabled',false).removeClass('disabled')
     }
   }
 
