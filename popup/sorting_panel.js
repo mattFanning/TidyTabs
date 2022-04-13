@@ -12,14 +12,17 @@ class SortingPanel {
     const $refreshedTable = await SortingPanel.#table()
     $('#sorting_rules_table').replaceWith($refreshedTable)
     
-    const $rowToReSelect = $(`tr[data-index="${selectIndex}"]`)
-    if($rowToReSelect.length !== 0) {
-      $rowToReSelect.click()
+    if(selectIndex != null) {
+      const $rowToReSelect = $(`tr[data-index="${selectIndex}"]`)
+      if($rowToReSelect.length !== 0) {
+        $rowToReSelect.click()
+      }
     }
+    
   }
 
   static async #table() {
-    const $table = $("<table>", {id: 'sorting_rules_table', class: 'sorting_table not_editable background_grey'})
+    const $table = $("<table>", {id: 'sorting_rules_table', class: 'sorting_table not_editable'})
     const $tableHeader = SortingPanel.#tableHeader()
     const $tableSubHeader = SortingPanel.#tableSubHeader()
     
@@ -82,13 +85,117 @@ class SortingPanel {
         function () {
           $(`tr.${selectionClass}`).removeClass(selectionClass)
           $(this).addClass(selectionClass)
-          const currentIndex = parseInt($(this).attr('data-index'))
-          const totalIndexes = $('tr[data-index]').length
-          SortingPanel.#footerButtonManagement(currentIndex, totalIndexes)
+          SortingPanel.#arrowButtonManagement()
         }
       )
 
     return $tableRow
+  }
+
+  static #tableInsertRow() {
+    const $tableRow = $('<tr>', {class: "clickable insert_row"})
+    
+    $('<td>', {class: 'border-right'})
+      .attr('contenteditable','true')
+      .appendTo($tableRow)
+
+    $('<td>', {class: 'border-right'})
+      .attr('contenteditable','true')
+      .appendTo($tableRow)
+
+    SortingPanel.#insertRowColorCell()
+      .attr('contenteditable','false')
+      .appendTo($tableRow)
+
+    $('<td>', {class: ''})
+      .attr('contenteditable','true')
+      .appendTo($tableRow)
+    
+    return $tableRow
+  }
+
+  static #insertRowColorCell() {
+    const removeBackgroundColor = function(index, css) {
+      return (css.match(/background_\w+/))
+    }
+
+    const $td = $('<td>', {id: 'insert_row_color', class: 'border-right'})
+    const $select = $('<select>')
+    
+    $select.on('change', function(e) {
+      var valueSelected = this.value;
+     
+      $(this).removeClass(removeBackgroundColor)
+      $("#insert_row_color").removeClass(removeBackgroundColor)
+      $(this).addClass(`background_${valueSelected}`)
+      $("#insert_row_color").addClass(`background_${valueSelected}`)
+    })
+
+    //fill in color options
+    $select.append($(`<option value=""></option>`))
+
+    const colors = Object.values(chrome.tabGroups.Color)
+    colors.forEach(color => {
+      $select.append($(`<option class="background_${color}" value="${color}">${color}</option>`))
+    })
+
+    const initialColor = $select.children().first().text()
+    $select.removeClass(removeBackgroundColor)
+    $select.addClass(`background_${initialColor}`)
+    $td.removeClass(removeBackgroundColor)
+    $td.addClass(`background_${initialColor}`)
+
+    $td.append($select)
+    return $td
+  }
+
+  static #tableFooter() {
+    const $tableRow = $('<tr>', {class: "footer_row"})
+    const $button_cell = $('<th>', {class: 'footer_button_cell thick_border_top'})
+    const $padding_cell = $('<th>', {class: 'thick_border_top'})
+
+    $padding_cell
+      .attr('colspan', 3)
+    $button_cell
+      .append(SortingPanel.#footerButton({
+        label: '&#x21BA', message: 'refresh', clickMethod: () => SortingPanel.#refreshTable(null)
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#11014', message: 'up', isDisabled: true, clickMethod: () => SortingPanel.#moveSelectedRow('up')
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#11015', message: 'down', isDisabled: true, clickMethod: () => SortingPanel.#moveSelectedRow('down')
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#43', message: 'add', clickMethod: () => SortingPanel.#addInsertRow()
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#x0270E', message: 'edit', clickMethod: () => {}
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#10003', message: 'save', clickMethod: () => {SortingPanel.#saveInsertRow()}
+      }))
+    $tableRow
+      .append($button_cell)
+      .append($padding_cell)
+
+    return $tableRow
+  }
+
+  static #footerButton(buttonOptions) {
+    const {label, message, isDisabled, clickMethod} = buttonOptions
+    // const hoveringClasses = ``
+    const $button = $('<button>', {id: `footer_button_${message}`, class: 'clickable footer_button background_button_grey'})
+    $button
+      .html(label)
+      .attr('title', message)
+      .click(() => clickMethod())
+    
+    if(isDisabled) {
+      $button.prop('disabled',true).addClass('disabled')
+    }
+    
+    return $button
   }
 
   static async #moveSelectedRow(message) {
@@ -96,7 +203,7 @@ class SortingPanel {
       return 
     }
 
-    const result = $('tr.selected')
+    const result = $('.data_row.selected')
     if(result.length) {
       // we have selection
       const index = parseInt(result.first().attr('data-index'))
@@ -112,6 +219,50 @@ class SortingPanel {
     }
   }
 
+  static async #addInsertRow() {
+    // determine if we are using selection's data-index or last data-index
+    const selectionClass = 'selected'
+    const $selection = $(`tr.${selectionClass}`)
+    let index
+
+    if($selection.length  > 0) {
+      index = parseInt($selection.attr('data-index'))
+    } else {
+      index = $('tr[data-index]').length -1
+    }
+    console.log(`index is: ${index}`)
+
+    const $tableRow = SortingPanel.#tableInsertRow() 
+    $tableRow.insertAfter($(`tr[data-index="${index}"]`))
+    $selection.removeClass(selectionClass)
+    
+    SortingPanel.#arrowButtonManagement()
+    SortingPanel.#addButtonManagement()
+  }
+
+  static async #saveInsertRow() {
+    const $insertRow = $('tr.insert_row')
+    if(SortingPanel.#rowDataIsValid($insertRow)) {
+      // get sorting rules
+      let sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
+      // add insertRow
+      const index = parseInt($insertRow.prev().attr('data-index')) + 1
+      const rowData = SortingPanel.#getRowData($insertRow)
+      const newSortingRule = {
+        address: rowData.address, 
+        groupProperties:{
+          title: rowData.title,
+          color: rowData.color === '' ? undefined : rowData.color,
+          collapsed: rowData.collapsed === '' ? undefined : rowData.collapsed
+        }}
+      sortingRules.splice(index, 0, newSortingRule)
+      console.log('a')
+      // send message for save
+      await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
+      await SortingPanel.#refreshTable()
+    }
+  }
+
   static #GROUP_PROPERTY_KEYS = undefined
   static async #getGroupPropertyKeys() {
     if(SortingPanel.#GROUP_PROPERTY_KEYS == undefined) {
@@ -120,41 +271,22 @@ class SortingPanel {
     return SortingPanel.#GROUP_PROPERTY_KEYS
   }
 
-  static #tableFooter() {
-    const $tableRow = $('<tr>', {class: "footer_row"})
-    const $button_cell = $('<th>', {class: 'footer_button_cell thick_border_top'})
-    const $padding_cell = $('<th>', {class: 'thick_border_top'})
-
-    $padding_cell
-      .attr('colspan', 3)
-    $button_cell
-      .append(SortingPanel.#footerButton({
-        label: '&#11014', message: 'up', clickMethod: () => SortingPanel.#moveSelectedRow('up')
-      }))
-      .append(SortingPanel.#footerButton({
-        label: '&#11015', message: 'down', clickMethod: ()=> SortingPanel.#moveSelectedRow('down')
-      }))
-    $tableRow
-      .append($button_cell)
-      .append($padding_cell)
-
-    return $tableRow
-  }
-
-  static #footerButton(buttonOptions) {
-    const {label, message, clickMethod} = buttonOptions
-    // const hoveringClasses = ``
-    const $button = $('<button>', {id: `footer_button_${message}`, class: 'clickable footer_button background_button_grey'})
-    $button
-      .html(label)
-      .prop('disabled',true).addClass('disabled')
-      .click(() => clickMethod())
-    return $button
-  }
-
-  static #footerButtonManagement(currentIndex, totalIndexes) {
+  static #arrowButtonManagement() {
     const $up = $('#footer_button_up')
     const $down = $('#footer_button_down')
+
+    const $selectedRow = $('tr.selected')
+    if($selectedRow.length <= 0 ||
+       $selectedRow.hasClass('insert_row')) {
+      // up: disabled, down: disabled
+      $up.prop('disabled',true).addClass('disabled')
+      $down.prop('disabled',true).addClass('disabled')
+      return
+    }
+
+    //$selectedRow == data_row
+    const currentIndex = parseInt($selectedRow.attr('data-index'))
+    const totalIndexes = $('tr[data-index]').length
     
     if (currentIndex === 0) {
       // up: disabled, down: enabled
@@ -173,4 +305,34 @@ class SortingPanel {
     }
   }
 
+  static #addButtonManagement() {
+    const $add = $('#footer_button_add')
+    const $insertRow = $('.insert_row')
+    
+    if($insertRow.length > 0) {
+      $add.prop('disabled',true).addClass('disabled')
+    } else {
+      $add.prop('disabled',false).removeClass('disabled')
+    }
+  }
+
+  static #rowDataIsValid($trSelector) {
+    const tds = $trSelector.children('td')
+    const data = SortingPanel.#getRowData($trSelector)
+    
+    if(data.address !== '' && data.title !== '') {
+      return true
+    }
+    return false
+  }
+
+  static #getRowData($trSelector) {
+    const tds = $trSelector.children('td')
+    return {
+      address: tds[0].textContent,
+      title: tds[1].textContent,
+      color: $(tds[2]).find(":selected").text(),
+      collapsed: tds[3].textContent
+    }
+  }
 }
