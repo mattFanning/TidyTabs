@@ -253,7 +253,7 @@ class SortingPanel {
         groupProperties:{
           title: rowData.title,
           color: rowData.color === '' ? undefined : rowData.color,
-          collapsed: rowData.collapsed === '' ? undefined : rowData.collapsed
+          collapsed: rowData.collapsed === '' ? undefined : rowData.collapsed === 'true'
         }}
       sortingRules.splice(index, 0, newSortingRule)
       console.log('a')

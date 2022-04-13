@@ -3,6 +3,11 @@
   "description": "An organizer of tabs & tab groups",
   "version": "1.0",
   "manifest_version": 3,
+  "icons": {
+    "16": "icons/broom16.png",
+    "48": "icons/broom48.png",
+    "128": "icons/broom128.png"
+  },
   "background": {
     "service_worker": "background_main.js"
   },
