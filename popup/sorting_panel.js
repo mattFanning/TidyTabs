@@ -170,7 +170,7 @@ class SortingPanel {
         label: '&#43', message: 'add', clickMethod: () => SortingPanel.#addInsertRow()
       }))
       .append(SortingPanel.#footerButton({
-        label: '&#x0270E', message: 'edit', clickMethod: () => {}
+        label: '&#x0270E', message: 'edit', isDisabled: true, clickMethod: () => {}
       }))
       .append(SortingPanel.#footerButton({
         label: '&#10003', message: 'save', clickMethod: () => {SortingPanel.#saveInsertRow()}

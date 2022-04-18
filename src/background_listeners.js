@@ -6,7 +6,20 @@ importScripts('/src/background_controller.js') /*
  * @listens chrome.commands.onCommand
 */
 chrome.commands.onCommand.addListener((command) => {
-  BackgroundController.executeMessage(command)
+  const goToFlag = /go_to_flag_\d/
+  const applyFlag = /apply_flag_\d/
+  
+  if (goToFlag.test(command)) {
+    const specificFlagNumber = command.slice(command.length -1, command.length)
+    BackgroundController.executeMessage({message: "go_to_flag", arg1: specificFlagNumber})
+  }
+  else if (applyFlag.test(command)) {
+    const specificFlagNumber = command.slice(command.length -1, command.length)
+    BackgroundController.executeMessage({message: "apply_flag", arg1: specificFlagNumber})
+  }
+  else {
+    BackgroundController.executeMessage(command)
+  }
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

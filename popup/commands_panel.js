@@ -26,16 +26,20 @@ class CommandPanel {
       {label:'Groups To End', message:'sweep_groups_to_end'}] 
     })
     const $goToFlag = await CommandPanel.#buttonGroup({color:'pink', label:'Go To', buttons:[
-      {label:'Flag #1', message:'go_to_flag_1'},
-      {label:'Flag #2', message:'go_to_flag_2'},
-      {label:'Flag #3', message:'go_to_flag_3'},
-      {label:'Flag #4', message:'go_to_flag_4'}]
+      {label:'Flag #1', message:'go_to_flag', arg1: 1},
+      {label:'Flag #2', message:'go_to_flag', arg1: 2},
+      {label:'Flag #3', message:'go_to_flag', arg1: 3},
+      {label:'Flag #4', message:'go_to_flag', arg1: 4},
+      {label:'Flag #5', message:'go_to_flag', arg1: 5},
+      {label:'Flag #6', message:'go_to_flag', arg1: 6}]
     })
     const $setFlag = await CommandPanel.#buttonGroup({color:'purple', label:'Flag Tab With', buttons:[
-      {label:'Flag #1', message:'apply_flag_1'},
-      {label:'Flag #2', message:'apply_flag_2'},
-      {label:'Flag #3', message:'apply_flag_3'},
-      {label:'Flag #4', message:'apply_flag_4'}] 
+      {label:'Flag #1', message:'apply_flag', arg1: 1},
+      {label:'Flag #2', message:'apply_flag', arg1: 2},
+      {label:'Flag #3', message:'apply_flag', arg1: 3},
+      {label:'Flag #4', message:'apply_flag', arg1: 4},
+      {label:'Flag #5', message:'apply_flag', arg1: 5},
+      {label:'Flag #6', message:'apply_flag', arg1: 6}] 
     })
     const $cyan = await CommandPanel.#buttonGroup({color:'cyan', label:'Cyan', buttons:[]})
     const $orange = await CommandPanel.#buttonGroup({color:'orange', label:'Orange', buttons:[]})
@@ -65,11 +69,15 @@ class CommandPanel {
       const {type} = button
       switch(type) {
         case 'toggle':
-          const $toggleButton = await CommandPanel.#toggleButton({color, label: button.label, messageGroup: button.messageGroup})
+          const $toggleButton = await CommandPanel.#toggleButton({
+            color, label: button.label, messageGroup: button.messageGroup
+          })
           $buttonGroup.append($toggleButton)
           break
         default:
-          $buttonGroup.append(CommandPanel.#button({color, label: button.label, message: button.message}))
+          $buttonGroup.append(CommandPanel.#button({
+            color, label: button.label, message: button.message, arg1: button.arg1
+          }))
       }
     }
 
@@ -77,12 +85,13 @@ class CommandPanel {
   }
 
   static #button(buttonOptions) {
-    const {color, label, message} = buttonOptions
+    const {color, label, message, arg1} = buttonOptions
     const hoveringClasses = `button_hover_margins button_hover_${color}`
     const $div = $("<div>", {"class": `clickable button background_button_grey`})
     $div
       .append(`<b>${label}</b>`)
-      .click(()=>{Promises.chrome.runtime.sendMessage(message)})
+      .click(()=>{
+        Promises.chrome.runtime.sendMessage({message, arg1})})
       .hover(
         function () { $(this).addClass(hoveringClasses) }, 
         function () { $(this).removeClass(hoveringClasses) }

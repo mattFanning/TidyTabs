@@ -3,7 +3,7 @@
 */
 class Flagging {
   static STORE_KEY = "tab_flags"
-  static TOTAL_FLAGS = 4
+  static TOTAL_FLAGS = 6
 
   /**
    * Stores the tab information indexed by flagId.

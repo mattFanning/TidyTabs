@@ -11,7 +11,7 @@ importScripts('/src/flagging.js') /*
 
   /**
    * Executes the message string's command 
-   * @param {string|object} input string:the message to execute object: {message:'', arg1:{}}
+   * @param {string|object} input string:the message to execute.  object:{message:'', arg1:{}}
    * @param {object} callback? the callback method to pass back values.  Optional
   */
   static async executeMessage(input, callback) {
@@ -96,29 +96,11 @@ importScripts('/src/flagging.js') /*
         break
 
     // flagging
-      case "apply_flag_1":
-        returnedValue = await BackgroundController.applyFlag(1)
+      case "apply_flag":
+        returnedValue = await BackgroundController.applyFlag(input['arg1'])
         break
-      case "go_to_flag_1":
-        returnedValue = await BackgroundController.goToFlag(1)
-        break
-      case "apply_flag_2":
-        returnedValue = await BackgroundController.applyFlag(2)
-        break
-      case "go_to_flag_2":
-        returnedValue = await BackgroundController.goToFlag(2)
-        break
-      case "apply_flag_3":
-        returnedValue = await BackgroundController.applyFlag(3)
-        break
-      case "go_to_flag_3":
-        returnedValue = await BackgroundController.goToFlag(3)
-        break
-      case "apply_flag_4":
-        returnedValue = await BackgroundController.applyFlag(4)
-        break
-      case "go_to_flag_4":
-        returnedValue = await BackgroundController.goToFlag(4)
+      case "go_to_flag":
+        returnedValue = await BackgroundController.goToFlag(input['arg1'])
         break
 
       default:
