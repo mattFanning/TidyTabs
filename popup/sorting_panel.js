@@ -380,7 +380,6 @@ class SortingPanel {
   }
 
   static #checkButtonManagement() {
-    // we need to use a 'text_cell' selector and get all values.  If all valid, show checkmark button
     const $textCells = $('.insert_row .text_cell')
     let validData = true 
     $textCells.each(index => {

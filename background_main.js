@@ -9,7 +9,7 @@
 try {
   //importScripts('/path/file.js', '/path2/file2.js', '/path3/file3.js' /*, and so on */)
   importScripts([
-    '/src/background_listeners.js'
+    '/background/background_listeners.js'
   ]
   )
 } catch (e) {
