@@ -33,6 +33,10 @@
   outline: thin solid;
 }
 
+.remove_row {
+  background-color: brown;
+}
+
 .insert_row {
   font-family: monospace;
   word-break: break-all;
@@ -42,7 +46,7 @@
   min-height: 17px;  
 }
 
-#insert_row_color select {
+.dropdown_cell select {
   -webkit-appearance: none;
   width: 100%;
   border: 0;
@@ -79,6 +83,7 @@ tr.data_row.selected {
   justify-content: center;
 }
 
+#footer_button_remove,
 #footer_button_add {
   font-size: 23px;
 }

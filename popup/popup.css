@@ -97,3 +97,4 @@ b {
 .background_orange {background-color: rgb(241, 175, 122);}
 
 .background_button_grey {background-color: rgb(163, 161, 161);}
+.background_unset {background-color: unset;}

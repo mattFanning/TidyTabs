@@ -83,9 +83,13 @@ class SortingPanel {
       )
       .click(
         function () {
-          $(`tr.${selectionClass}`).removeClass(selectionClass)
-          $(this).addClass(selectionClass)
-          SortingPanel.#arrowButtonManagement()
+          const $insertRow = $('tr.insert_row')
+          if($insertRow.length <= 0) {
+            $(`tr.${selectionClass}`).removeClass(selectionClass)
+            $(this).addClass(selectionClass)
+            SortingPanel.#arrowButtonManagement()
+            SortingPanel.#removeButtonManagement()
+          }
         }
       )
 
@@ -94,24 +98,51 @@ class SortingPanel {
 
   static #tableInsertRow() {
     const $tableRow = $('<tr>', {class: "clickable insert_row"})
+    const selectionClass = 'selected'
     
-    $('<td>', {class: 'border-right'})
-      .attr('contenteditable','true')
-      .appendTo($tableRow)
+    const changeHandler = function() {
+      const $editableCells = $('td[contenteditable]')
+      const returnedValues = $editableCells.val()
+      console.log(returnedValues)
+    }
 
-    $('<td>', {class: 'border-right'})
+    SortingPanel.#insertRowTextCell()
       .attr('contenteditable','true')
       .appendTo($tableRow)
+      .change(changeHandler)
+
+    SortingPanel.#insertRowTextCell()
+      .attr('contenteditable','true')
+      .appendTo($tableRow)
+      .change(changeHandler)
 
     SortingPanel.#insertRowColorCell()
       .attr('contenteditable','false')
       .appendTo($tableRow)
 
-    $('<td>', {class: ''})
-      .attr('contenteditable','true')
+    SortingPanel.#insertRowCollapseCell()
+      .attr('contenteditable','false')
       .appendTo($tableRow)
     
+    $tableRow.click(function () {
+      $(`tr.${selectionClass}`).removeClass(selectionClass)
+      SortingPanel.#arrowButtonManagement()
+      SortingPanel.#removeButtonManagement()
+    })
+
     return $tableRow
+  }
+
+  static #insertRowTextCell() {
+    const $td = $('<td>', {class: 'text_cell border-right'})
+    
+    $td[0].addEventListener('input', function (event) {
+      console.log(`${event.data}`)
+      // event.data will be null if "empty"
+      SortingPanel.#checkButtonManagement()
+    })
+
+    return $td 
   }
 
   static #insertRowColorCell() {
@@ -119,32 +150,39 @@ class SortingPanel {
       return (css.match(/background_\w+/))
     }
 
-    const $td = $('<td>', {id: 'insert_row_color', class: 'border-right'})
-    const $select = $('<select>')
+    const $td = $('<td>', {class: 'background_unset dropdown_cell border-right'})
+    const $select = $('<select>', {class: 'background_unset'})
     
     $select.on('change', function(e) {
-      var valueSelected = this.value;
+      var valueSelected = this.value
      
       $(this).removeClass(removeBackgroundColor)
-      $("#insert_row_color").removeClass(removeBackgroundColor)
+      $td.removeClass(removeBackgroundColor)
       $(this).addClass(`background_${valueSelected}`)
-      $("#insert_row_color").addClass(`background_${valueSelected}`)
+      $td.addClass(`background_${valueSelected}`)
     })
 
-    //fill in color options
-    $select.append($(`<option value=""></option>`))
+    // fill in color options
+    $select.append($(`<option class="background_unset" value="unset"></option>`))
 
     const colors = Object.values(chrome.tabGroups.Color)
     colors.forEach(color => {
       $select.append($(`<option class="background_${color}" value="${color}">${color}</option>`))
     })
 
-    const initialColor = $select.children().first().text()
-    $select.removeClass(removeBackgroundColor)
-    $select.addClass(`background_${initialColor}`)
-    $td.removeClass(removeBackgroundColor)
-    $td.addClass(`background_${initialColor}`)
+    $td.append($select)
+    return $td
+  }
 
+  static #insertRowCollapseCell() {
+    const $td = $('<td>', {class: 'background_unset dropdown_cell border-right'})
+    const $select = $('<select>', {class: 'background_unset'})
+    
+    // fill in options
+    $select.append($(`<option value=""></option>`))
+    $select.append($(`<option value="true">true</option>`))
+    $select.append($(`<option value="false">false</option>`))
+    
     $td.append($select)
     return $td
   }
@@ -167,13 +205,16 @@ class SortingPanel {
         label: '&#11015', message: 'down', isDisabled: true, clickMethod: () => SortingPanel.#moveSelectedRow('down')
       }))
       .append(SortingPanel.#footerButton({
-        label: '&#43', message: 'add', clickMethod: () => SortingPanel.#addInsertRow()
-      }))
-      .append(SortingPanel.#footerButton({
         label: '&#x0270E', message: 'edit', isDisabled: true, clickMethod: () => {}
       }))
       .append(SortingPanel.#footerButton({
-        label: '&#10003', message: 'save', clickMethod: () => {SortingPanel.#saveInsertRow()}
+        label: '&#8722', message: 'remove', isDisabled: true, clickMethod: () => {SortingPanel.#removeSelectedRow()}
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#43', message: 'add', clickMethod: () => SortingPanel.#addInsertRow()
+      }))
+      .append(SortingPanel.#footerButton({
+        label: '&#10003', message: 'save', isDisabled: true, clickMethod: () => {SortingPanel.#saveInsertRow()}
       }))
     $tableRow
       .append($button_cell)
@@ -219,6 +260,17 @@ class SortingPanel {
     }
   }
 
+  static async #removeSelectedRow() {
+    const selectionClass = 'selected'
+    const $selection = $(`tr.${selectionClass}`)
+    if($selection.length  > 0) {
+      const index = parseInt($selection.attr('data-index'))
+      $selection
+        .removeClass('data_row')
+        .addClass('remove_row')
+
+    }
+  }
   static async #addInsertRow() {
     // determine if we are using selection's data-index or last data-index
     const selectionClass = 'selected'
@@ -238,6 +290,7 @@ class SortingPanel {
     
     SortingPanel.#arrowButtonManagement()
     SortingPanel.#addButtonManagement()
+    SortingPanel.#removeButtonManagement()
   }
 
   static async #saveInsertRow() {
@@ -305,6 +358,16 @@ class SortingPanel {
     }
   }
 
+  static #removeButtonManagement() {
+    const $remove = $('#footer_button_remove')
+    const $selectedRow = $('tr.selected')
+    if($selectedRow.length <= 0 || $selectedRow.hasClass('insert_row')) {
+      $remove.prop('disabled',true).addClass('disabled')
+    } else {
+      $remove.prop('disabled',false).removeClass('disabled')
+    }
+  }
+
   static #addButtonManagement() {
     const $add = $('#footer_button_add')
     const $insertRow = $('.insert_row')
@@ -313,6 +376,23 @@ class SortingPanel {
       $add.prop('disabled',true).addClass('disabled')
     } else {
       $add.prop('disabled',false).removeClass('disabled')
+    }
+  }
+
+  static #checkButtonManagement() {
+    // we need to use a 'text_cell' selector and get all values.  If all valid, show checkmark button
+    const $textCells = $('.insert_row .text_cell')
+    let validData = true 
+    $textCells.each(index => {
+      if($textCells[index].textContent === '') {
+        validData = false
+      }
+    })
+
+    if(validData) {
+      $('#footer_button_save').prop('disabled',false).removeClass('disabled')
+    } else {
+      $('#footer_button_save').prop('disabled',true).addClass('disabled')
     }
   }
 
