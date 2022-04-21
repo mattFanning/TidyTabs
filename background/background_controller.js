@@ -1,7 +1,7 @@
-importScripts('/background/sorting.js')
-importScripts('/background/flagging.js') /*
-  -> importScripts('/background/wrappers.js')
-*/
+importScripts('/background/sorting.js')/*
+  -> importScripts('/background/wrappers.js') */
+importScripts('/background/flagging.js')
+importScripts('/background/bookmarking.js')
 
 /**
  * The controller of the background operations.

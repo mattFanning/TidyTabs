@@ -1,3 +1,5 @@
+/*importScripts('/background/wrappers.js') <- already included thru parent*/
+
 /**
  * The rules and logic for sorting tabs.
 */
