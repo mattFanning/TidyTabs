@@ -9,7 +9,7 @@
     "128": "icons/wBroom128.png"
   },
   "background": {
-    "service_worker": "background_main.js"
+    "service_worker": "service_worker.js"
   },
   "commands": {
     "apply_flag_1": {
@@ -63,6 +63,9 @@
     },
     "go_to_flag_6": {
       "description": "Flag 6: Switch to flagged tab"
+    },
+    "recall_tab": {
+      "description": "Switch to previous tab"
     }
   },
   "permissions": ["tabs", "tabGroups", "storage"],

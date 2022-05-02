@@ -1,7 +1,7 @@
-importScripts('/background/sorting.js')/*
-  -> importScripts('/background/wrappers.js') */
+importScripts('/background/wrappers.js')
+importScripts('/background/sorting.js')
 importScripts('/background/flagging.js')
-importScripts('/background/bookmarking.js')
+importScripts('/background/tab_recall.js')
 
 /**
  * The controller of the background operations.
@@ -85,7 +85,7 @@ importScripts('/background/bookmarking.js')
         returnedValue = await BackgroundController.callbackAutoCollapseStatus()        
         break
 
-    // fetches
+    // sorting
       case "set_sorting_rules" :
         returnedValue = await Sorting.setRules(input['arg1'])
         break
@@ -102,6 +102,11 @@ importScripts('/background/bookmarking.js')
         break
       case "go_to_flag":
         returnedValue = await BackgroundController.goToFlag(input['arg1'])
+        break
+
+    // recall
+      case "recall_tab":
+        returnedValue = await TabRecall.activatePreviousTab()
         break
 
       default:
@@ -407,12 +412,4 @@ importScripts('/background/bookmarking.js')
     // flags stored with 0-based indexing, but activated with 1-based.
     return await Flagging.activateFlag(flagNumber -1) 
    }
-
-  static async stringifyAllTabGroups() {
-    const tabGroups = await Promises.chrome.tabGroups.query({})
-    console.log(`%cAll Tab Groups:`, `color:green`)
-    tabGroups.forEach(element => {
-      console.log(JSON.stringify(element))
-    })
-  }
 }

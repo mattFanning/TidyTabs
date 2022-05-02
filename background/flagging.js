@@ -4,7 +4,7 @@
  * The rules and logic for sorting tabs.
 */
 class Flagging {
-  static STORE_KEY = "tab_flags"
+  static #STORE_KEY = "tab_flags"
   static TOTAL_FLAGS = 6
 
   /**
@@ -52,12 +52,12 @@ class Flagging {
    * @return {Promise<FlaggingTabInfo[]>} 
   */
   static async getFlags() {
-    const response = await Promises.chrome.storage.local.get(Flagging.STORE_KEY)
+    const response = await Promises.chrome.storage.local.get(Flagging.#STORE_KEY)
     if(Object.keys(response).length <= 0) {
       const emptyFlags = Flagging.#generateEmptyFlags()
       return emptyFlags
     }
-    return response[Flagging.STORE_KEY]
+    return response[Flagging.#STORE_KEY]
   }
 
   /**
@@ -71,7 +71,7 @@ class Flagging {
 
   //private
   static async #write(flags) {
-    const payload = {[Flagging.STORE_KEY]: flags}
+    const payload = {[Flagging.#STORE_KEY]: flags}
     return await Promises.chrome.storage.local.set(payload) 
   }
 

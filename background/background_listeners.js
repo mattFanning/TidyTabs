@@ -1,4 +1,5 @@
 importScripts('/background/background_controller.js') /*
+  -> importScripts('/background/tab_recall.js')
 */
 
 /**
@@ -34,6 +35,7 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   // Unchecked runtime.lastError: Tabs cannot be edited right now (user may be dragging a tab).
   setTimeout(async () => {
+    await TabRecall.addTabInfo(activeInfo)
     if(await BackgroundController.getAutoCollapseStatus()) {
       BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }

@@ -5,6 +5,5 @@ Icons provided by http://icons8.com
 see http://icons8.com/license/
 
 ## Wishlist
-### Group Snapshots
+### Group Bookmarks
     This is bookmarking groups with tabs and order
-
