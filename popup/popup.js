@@ -5,16 +5,24 @@ class Popup {
   static SORTING_BUTTON = "#sorting_button"
 
   static async render() {
+    const $logo = await Popup.logo()
     const $viewController = await Popup.controller()
     const $buttonPanel = await CommandPanel.generate()
     const $sortingPanel = await SortingPanel.generate()
 
     $("body").empty()
+      // .append($logo)
       .append($viewController)
       .append($buttonPanel)
       .append($sortingPanel)
 
       Popup.showPanel(Popup.COMMANDS_PANEL_ID)
+  }
+
+  static async logo() {
+    const $logo = $("<div>", {class: `logo`})
+    $logo.append(`<img src="icons/bBroom96.png" alt="Tidy Tabs!">`)
+    return $logo
   }
 
   static async controller() {

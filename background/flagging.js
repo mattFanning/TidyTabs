@@ -1,11 +1,11 @@
-/*importScripts('/background/wrappers.js') <- already included thru parent*/
+/*importScripts('/wrappers.js') <- already included thru parent*/
 
 /**
  * The rules and logic for sorting tabs.
 */
 class Flagging {
   static #STORE_KEY = "tab_flags"
-  static TOTAL_FLAGS = 6
+  static TOTAL_FLAGS = 10
 
   /**
    * Stores the tab information indexed by flagId.

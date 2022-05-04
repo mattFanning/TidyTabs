@@ -31,15 +31,14 @@ class CommandPanel {
       {label:'Flag #3', message:'go_to_flag', arg1: 3},
       {label:'Flag #4', message:'go_to_flag', arg1: 4},
       {label:'Flag #5', message:'go_to_flag', arg1: 5},
-      {label:'Flag #6', message:'go_to_flag', arg1: 6}]
+      {label:'Previous Tab', message:'recall_tab'}]
     })
     const $setFlag = await CommandPanel.#buttonGroup({color:'purple', label:'Flag Tab With', buttons:[
       {label:'Flag #1', message:'apply_flag', arg1: 1},
       {label:'Flag #2', message:'apply_flag', arg1: 2},
       {label:'Flag #3', message:'apply_flag', arg1: 3},
       {label:'Flag #4', message:'apply_flag', arg1: 4},
-      {label:'Flag #5', message:'apply_flag', arg1: 5},
-      {label:'Flag #6', message:'apply_flag', arg1: 6}] 
+      {label:'Flag #5', message:'apply_flag', arg1: 5}] 
     })
     const $cyan = await CommandPanel.#buttonGroup({color:'cyan', label:'Cyan', buttons:[]})
     const $orange = await CommandPanel.#buttonGroup({color:'orange', label:'Orange', buttons:[]})

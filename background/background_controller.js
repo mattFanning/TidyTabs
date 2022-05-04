@@ -1,4 +1,4 @@
-importScripts('/background/wrappers.js')
+importScripts('/wrappers.js')
 importScripts('/background/sorting.js')
 importScripts('/background/flagging.js')
 importScripts('/background/tab_recall.js')
@@ -404,12 +404,11 @@ importScripts('/background/tab_recall.js')
   // flagging
   static async applyFlag(flagNumber) {
     const currentTab = await BackgroundController.getActiveTab()
-    // flags stored with 0-based indexing, but activated with 1-based.
-    return await Flagging.flagTab(flagNumber -1, {tabId: currentTab.id})  
+    
+    return await Flagging.flagTab(flagNumber, {tabId: currentTab.id})  
   }
 
   static async goToFlag(flagNumber) {
-    // flags stored with 0-based indexing, but activated with 1-based.
-    return await Flagging.activateFlag(flagNumber -1) 
+    return await Flagging.activateFlag(flagNumber) 
    }
 }

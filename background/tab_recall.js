@@ -1,4 +1,4 @@
-/*importScripts('/background/wrappers.js') <- already included thru parent*/
+/*importScripts('/wrappers.js') <- already included thru parent*/
 
 class TabRecall {  
   static #STORE_KEY = "tab_recall"

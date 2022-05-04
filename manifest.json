@@ -12,6 +12,8 @@
     "service_worker": "service_worker.js"
   },
   "commands": {
+    "_execute_action": {
+    },
     "apply_flag_1": {
       "suggested_key": {
         "default": "Alt+Shift+1",
@@ -63,6 +65,30 @@
     },
     "go_to_flag_6": {
       "description": "Flag 6: Switch to flagged tab"
+    },
+    "apply_flag_7": {
+      "description": "Flag 7: Apply to current tab"
+    },
+    "go_to_flag_7": {
+      "description": "Flag 7: Switch to flagged tab"
+    },
+    "apply_flag_8": {
+      "description": "Flag 8: Apply to current tab"
+    },
+    "go_to_flag_8": {
+      "description": "Flag 8: Switch to flagged tab"
+    },
+    "apply_flag_9": {
+      "description": "Flag 9: Apply to current tab"
+    },
+    "go_to_flag_9": {
+      "description": "Flag 9: Switch to flagged tab"
+    },
+    "apply_flag_0": {
+      "description": "Flag 0: Apply to current tab"
+    },
+    "go_to_flag_0": {
+      "description": "Flag 0: Switch to flagged tab"
     },
     "recall_tab": {
       "description": "Switch to previous tab"
