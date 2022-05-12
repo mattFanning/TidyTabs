@@ -1,5 +1,6 @@
 /*importScripts('/wrappers.js') <- already included thru parent*/
 
+// TODO: setup TabRecall with previousTab[] so if the tab we are switching to doesn't exist (closed), we can switch to the 1 before
 class TabRecall {  
   static #STORE_KEY = "tab_recall"
   

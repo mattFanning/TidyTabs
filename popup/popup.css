@@ -37,6 +37,26 @@ b {
   cursor: default;
 }
 
+.logo {
+  display: flex;
+  position: fixed;
+  
+  height: 26px;
+  padding: 2px;
+  top: 2px;
+  right: 7px;
+  border-radius: 5px 5px 0px 0px;
+
+  align-items: baseline;
+}
+
+.logo b {
+  font-size: 20px;
+  margin-left: 3px;
+  font-style: italic;
+  color: rgb(45,45,45);
+}
+
 .controller_panel {
   display: flex;
   flex-direction: column;
@@ -73,10 +93,24 @@ b {
   margin-right: 5px;
   
   border-radius: 5px 5px 0px 0px;
+
+  border-top: 2px solid white;
+  border-right: 2px solid white;
+  border-left: 2px solid white;
+}
+
+.controller_button.controller_button_inactive {
+  background-color:rgb(163, 161, 161);
+  border-top: 2px solid rgb(163, 161, 161);
+  border-right: 2px solid rgb(163, 161, 161);
+  border-left: 2px solid rgb(163, 161, 161);
 }
 
 .controller_button.controller_button_active {
   background-color:rgb(146, 182, 242);
+  border-top: 2px solid rgb(146, 182, 242);
+  border-right: 2px solid rgb(146, 182, 242);
+  border-left: 2px solid rgb(146, 182, 242);
 }
 
 .controller_button.hover_borders {

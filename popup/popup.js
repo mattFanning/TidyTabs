@@ -11,7 +11,7 @@ class Popup {
     const $sortingPanel = await SortingPanel.generate()
 
     $("body").empty()
-      // .append($logo)
+      .append($logo)
       .append($viewController)
       .append($buttonPanel)
       .append($sortingPanel)
@@ -21,7 +21,9 @@ class Popup {
 
   static async logo() {
     const $logo = $("<div>", {class: `logo`})
-    $logo.append(`<img src="icons/bBroom96.png" alt="Tidy Tabs!">`)
+    $logo
+      .append(`<img src="../icons/bBroom24.png" alt="Tidy Tabs!">`)
+      .append(`<b>Tidy Tabs!</b>`)
     return $logo
   }
 
@@ -42,7 +44,7 @@ class Popup {
   static async controllerButton(buttonOptions) {
     const {id, color, label, clickId} = buttonOptions
     const hoveringClasses = `hover_borders`
-    const $div = $("<div>", {"id": id, "class": `clickable controller_button background_button_grey`})
+    const $div = $("<div>", {"id": id, "class": `clickable controller_button controller_button_inactive`})
     $div
       .append(`<b>${label}</b>`)
       .click(()=>{Popup.showPanel(clickId)})
@@ -55,18 +57,25 @@ class Popup {
   }
 
   static showPanel(panelId) {
+    const $sortingPanel = $(Popup.SORTING_PANEL_ID)
+    const $commandsPanel = $(Popup.COMMANDS_PANEL_ID)
+    const $sortingButton = $(Popup.SORTING_BUTTON)
+    const $commandsButton = $(Popup.COMMANDS_BUTTON)
+    const activeClass = 'controller_button_active'
+    const inactiveClass = 'controller_button_inactive'
+
     switch(panelId) {
       case Popup.COMMANDS_PANEL_ID:
-        $(Popup.SORTING_PANEL_ID).hide()
-        $(Popup.COMMANDS_PANEL_ID).show()
-        $(Popup.COMMANDS_BUTTON).addClass('controller_button_active')
-        $(Popup.SORTING_BUTTON).removeClass('controller_button_active')
+        $sortingPanel.hide()
+        $sortingButton.removeClass(activeClass).addClass(inactiveClass)
+        $commandsPanel.show()
+        $commandsButton.removeClass(inactiveClass).addClass(activeClass)
         break
       case Popup.SORTING_PANEL_ID:
-        $(Popup.COMMANDS_PANEL_ID).hide()
-        $(Popup.SORTING_PANEL_ID).show()
-        $(Popup.COMMANDS_BUTTON).removeClass('controller_button_active')
-        $(Popup.SORTING_BUTTON).addClass('controller_button_active')
+        $commandsPanel.hide()
+        $commandsButton.removeClass(activeClass).addClass(inactiveClass)
+        $sortingPanel.show()
+        $sortingButton.removeClass(inactiveClass).addClass(activeClass)
         break
     }
   }
