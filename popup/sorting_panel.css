@@ -34,7 +34,9 @@
 }
 
 .remove_row {
-  background-color: brown;
+  font-family: monospace;
+  outline: thin solid;
+  background-color: rgba(250, 0, 0, .3);
 }
 
 .insert_row {

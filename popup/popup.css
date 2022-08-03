@@ -41,13 +41,12 @@ b {
   display: flex;
   position: fixed;
   
-  height: 26px;
-  padding: 2px;
-  top: 2px;
+  height: 25px;
+  top: 6px;
   right: 7px;
   border-radius: 5px 5px 0px 0px;
 
-  align-items: baseline;
+  align-items: flex-start;
 }
 
 .logo b {

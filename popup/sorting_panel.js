@@ -83,7 +83,7 @@ class SortingPanel {
       )
       .click(
         function () {
-          const $insertRow = $('tr.insert_row')
+          const $insertRow = $('tr.insert_row, tr.remove_row')
           if($insertRow.length <= 0) {
             $(`tr.${selectionClass}`).removeClass(selectionClass)
             $(this).addClass(selectionClass)
@@ -175,7 +175,7 @@ class SortingPanel {
   }
 
   static #insertRowCollapseCell() {
-    const $td = $('<td>', {class: 'background_unset dropdown_cell border-right'})
+    const $td = $('<td>', {class: 'background_unset dropdown_cell'})
     const $select = $('<select>', {class: 'background_unset'})
     
     // fill in options
@@ -214,7 +214,7 @@ class SortingPanel {
         label: '&#43', message: 'add', clickMethod: () => SortingPanel.#addInsertRow()
       }))
       .append(SortingPanel.#footerButton({
-        label: '&#10003', message: 'save', isDisabled: true, clickMethod: () => {SortingPanel.#saveInsertRow()}
+        label: '&#10003', message: 'save', isDisabled: true, clickMethod: () => {SortingPanel.#saveRow()}
       }))
     $tableRow
       .append($button_cell)
@@ -268,8 +268,13 @@ class SortingPanel {
       $selection
         .removeClass('data_row')
         .addClass('remove_row')
-
     }
+
+    $selection.removeClass(selectionClass)
+    SortingPanel.#arrowButtonManagement()
+    SortingPanel.#addButtonManagement()
+    SortingPanel.#removeButtonManagement()
+    SortingPanel.#checkButtonManagement()
   }
   static async #addInsertRow() {
     // determine if we are using selection's data-index or last data-index
@@ -293,26 +298,41 @@ class SortingPanel {
     SortingPanel.#removeButtonManagement()
   }
 
-  static async #saveInsertRow() {
+  static async #saveRow() {
     const $insertRow = $('tr.insert_row')
-    if(SortingPanel.#rowDataIsValid($insertRow)) {
-      // get sorting rules
-      let sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
-      // add insertRow
-      const index = parseInt($insertRow.prev().attr('data-index')) + 1
-      const rowData = SortingPanel.#getRowData($insertRow)
-      const newSortingRule = {
-        address: rowData.address, 
-        groupProperties:{
-          title: rowData.title,
-          color: rowData.color === '' ? undefined : rowData.color,
-          collapsed: rowData.collapsed === '' ? undefined : rowData.collapsed === 'true'
-        }}
-      sortingRules.splice(index, 0, newSortingRule)
-      console.log('a')
-      // send message for save
-      await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
-      await SortingPanel.#refreshTable()
+    const $removeRow = $('tr.remove_row')
+    let sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
+
+    switch(true) {
+      case $insertRow.length > 0 :
+        if(SortingPanel.#rowDataIsValid($insertRow)) {
+          // add insert_row
+          const index = parseInt($insertRow.prev().attr('data-index')) + 1
+          const rowData = SortingPanel.#getRowData($insertRow)
+          const newSortingRule = {
+            address: rowData.address, 
+            groupProperties:{
+              title: rowData.title,
+              color: rowData.color === '' ? undefined : rowData.color,
+              collapsed: rowData.collapsed === '' ? undefined : rowData.collapsed === 'true'
+            }}
+          sortingRules.splice(index, 0, newSortingRule)
+          // send message for save
+          await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
+          await SortingPanel.#refreshTable()
+        }    
+      break
+      case $removeRow.length > 0 :
+        // remove remove_row
+        const index = parseInt($removeRow.first().attr('data-index'))
+        sortingRules.splice(index, 1)
+        
+        // send message for save
+        await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
+        await SortingPanel.#refreshTable()
+        break
+      default:
+        break
     }
   }
 
@@ -330,7 +350,8 @@ class SortingPanel {
 
     const $selectedRow = $('tr.selected')
     if($selectedRow.length <= 0 ||
-       $selectedRow.hasClass('insert_row')) {
+       $selectedRow.hasClass('insert_row') ||
+       $selectedRow.hasClass('remove_row')) {
       // up: disabled, down: disabled
       $up.prop('disabled',true).addClass('disabled')
       $down.prop('disabled',true).addClass('disabled')
@@ -370,9 +391,9 @@ class SortingPanel {
 
   static #addButtonManagement() {
     const $add = $('#footer_button_add')
-    const $insertRow = $('.insert_row')
+    const $insertRemoveRow = $('.insert_row, .remove_row')
     
-    if($insertRow.length > 0) {
+    if($insertRemoveRow.length > 0) {
       $add.prop('disabled',true).addClass('disabled')
     } else {
       $add.prop('disabled',false).removeClass('disabled')
@@ -380,18 +401,31 @@ class SortingPanel {
   }
 
   static #checkButtonManagement() {
-    const $textCells = $('.insert_row .text_cell')
-    let validData = true 
-    $textCells.each(index => {
-      if($textCells[index].textContent === '') {
-        validData = false
-      }
-    })
+    const $insert_selection = $('tr.insert_row')
+    const $remove_selection = $('tr.remove_row')
 
-    if(validData) {
-      $('#footer_button_save').prop('disabled',false).removeClass('disabled')
-    } else {
-      $('#footer_button_save').prop('disabled',true).addClass('disabled')
+    switch(true) {
+      case $remove_selection.length > 0 :
+        $('#footer_button_save').prop('disabled',false).removeClass('disabled')
+        break
+      case $insert_selection.length > 0 :
+        const $textCells = $('.insert_row .text_cell')
+        let validData = true 
+        $textCells.each(index => {
+          if($textCells[index].textContent === '') {
+            validData = false
+          }
+        })
+
+        if(validData) {
+          $('#footer_button_save').prop('disabled',false).removeClass('disabled')
+        } else {
+          $('#footer_button_save').prop('disabled',true).addClass('disabled')
+        }  
+        break
+      default:
+        $('#footer_button_save').prop('disabled',true).addClass('disabled')
+        break
     }
   }
 
