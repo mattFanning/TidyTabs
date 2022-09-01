@@ -5,5 +5,6 @@ Icons provided by http://icons8.com
 see http://icons8.com/license/
 
 ## Wishlist
-### Group Bookmarks
-    This is bookmarking groups with tabs and order
++ Add ungrouped tabs to "💭" group.
++ Group ungrouped tabs automatically.
++ Add "💭" group functionality to the Sort functionality. 

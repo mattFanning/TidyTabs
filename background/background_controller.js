@@ -73,6 +73,9 @@ importScripts('/background/tab_recall.js')
       case "sweep_groups_to_end":
         returnedValue = await BackgroundController.sweepGroupsToEnd()
         break
+      case "sweep_ungrouped_tabs":
+      returnedValue = await BackgroundController.sweepUnGroupedTabs()
+      break
 
     // auto collapse
       case "auto_collapse_groups_status":
@@ -176,12 +179,19 @@ importScripts('/background/tab_recall.js')
     await BackgroundController.#sortTabsFrom(allTabs)
   }
 
-  static async #sortTabsFrom(tabs) {
+  static async #sortTabsFrom(tabs, flow='defined-rules') {
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
-
     let tab = undefined
-    for (tab of tabs) {
+
+    if(flow == 'dust-pile')  {
+      tab = await BackgroundController.getActiveTab()
+      await Sorting.moveToDustPile(tabs)
+    }
+    else { 
+      for (tab of tabs) {
         await Sorting.executeOn(tab)
+        //tab = the last processed tab
+      }
     }
 
     if(autoCollapseGroupEnabled) {
@@ -349,6 +359,22 @@ importScripts('/background/tab_recall.js')
     const groupIndexes = await BackgroundController.getTabGroupIndexesInCurrentWindow()
     for(const groupIndex of groupIndexes) {
       await Promises.chrome.tabGroups.move(groupIndex.groupId, {index: -1})
+    }
+  }
+
+  /**
+   * Sweeps all ungrouped tabs into the dust group 
+   */
+   static async sweepUnGroupedTabs() {
+    // get all ungrouped tabs
+    const ungroupedTabs = await Promises.chrome.tabs.query({groupId: chrome.tabGroups.TAB_GROUP_ID_NONE})
+    await Sorting.moveToDustPile(ungroupedTabs)
+    
+    const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
+    if(autoCollapseGroupEnabled) {
+      const tab = await BackgroundController.getActiveTab()
+      const activeInfo = {tabId: tab.id, windowId: tab.windowId}
+      await BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
   }
 

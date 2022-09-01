@@ -91,6 +91,36 @@ class Sorting {
     }
   }
 
+  /**
+   * Moves all tabs into "dust pile" group
+   * @param {object[]} tabs see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
+   */
+  static async moveToDustPile(tabs) {
+    console.log('moveToDustPile executed')
+    if(tabs.length <= 0) {
+      return false
+    }
+    
+    const tabIds = tabs.map(tab => tab.id)
+    const groups = await Promises.chrome.tabGroups.query({title: "💭"})  //dustGroup
+    if(groups.length > 0) {
+      console.log("dustGroup found")
+      const dustGroup = groups[0]
+      const dustGroupId = dustGroup.id
+      await Promises.chrome.tabs.group({groupId: dustGroupId, tabIds: tabIds})
+    }
+    else {
+      console.log("dustGroup not found")
+      const {windowId} = tabs[0]
+      const newGroupId = await Promises.chrome.tabs.group({
+        tabIds: tabIds, 
+        createProperties: {windowId: windowId}
+      })
+      const updateProperties = {title: "💭"}
+      await Promises.chrome.tabGroups.update(newGroupId, updateProperties)
+    }
+  }
+
   static getGroupPropertyKeys() {
     return Sorting.#GROUP_PROPERTY_KEYS
   }

@@ -14,7 +14,7 @@ class CommandPanel {
     const $remove = await CommandPanel.#buttonGroup({color:'red', label:'Remove', buttons:[
       {label:'Highlighted Duplicate Tabs', message:'remove_highlighted_dup_tabs'},
       {label:'Duplicate Tabs In Current Window', message:'remove_dup_tabs_in_window'},
-      {label:'Duplicate Tabs', message:'remove_dup_tabs'}]
+      {label:'All Duplicate Tabs', message:'remove_dup_tabs'}]
     })
     const $collapse = await CommandPanel.#buttonGroup({color:'yellow', label:'Collapse', buttons:[
       {label:'Groups In Current Window', message:'collapse_all_groups_in_window'},
@@ -23,7 +23,8 @@ class CommandPanel {
     })
     const $sweep = await CommandPanel.#buttonGroup({color:'green', label:'Sweep', buttons:[
       {label:'Groups To Beginning', message:'sweep_groups_to_beginning'},
-      {label:'Groups To End', message:'sweep_groups_to_end'}] 
+      {label:'Groups To End', message:'sweep_groups_to_end'},
+      {label:'Ungrouped Tabs Into Dust Pile &#128173;', message: 'sweep_ungrouped_tabs'}] 
     })
     const $goToFlag = await CommandPanel.#buttonGroup({color:'pink', label:'Go To', buttons:[
       {label:'Flag #1', message:'go_to_flag', arg1: 1},
