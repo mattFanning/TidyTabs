@@ -179,23 +179,14 @@ importScripts('/background/tab_recall.js')
     await BackgroundController.#sortTabsFrom(allTabs)
   }
 
-  static async #sortTabsFrom(tabs, flow='defined-rules') {
+  static async #sortTabsFrom(tabs) {
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
-    let tab = undefined
+    const activeTab = await BackgroundController.getActiveTab()
 
-    if(flow == 'dust-pile')  {
-      tab = await BackgroundController.getActiveTab()
-      await Sorting.moveToDustPile(tabs)
-    }
-    else { 
-      for (tab of tabs) {
-        await Sorting.executeOn(tab)
-        //tab = the last processed tab
-      }
-    }
+    await Sorting.execute(tabs, activeTab)
 
     if(autoCollapseGroupEnabled) {
-      const activeInfo = {tabId: tab.id, windowId: tab.windowId}
+      const activeInfo = {tabId: activeTab.id, windowId: activeTab.windowId}
       await BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
   }
@@ -368,12 +359,12 @@ importScripts('/background/tab_recall.js')
    static async sweepUnGroupedTabs() {
     // get all ungrouped tabs
     const ungroupedTabs = await Promises.chrome.tabs.query({groupId: chrome.tabGroups.TAB_GROUP_ID_NONE})
-    await Sorting.moveToDustPile(ungroupedTabs)
+    const activeTab = await BackgroundController.getActiveTab()
+    await Sorting.moveToDustPile(ungroupedTabs, activeTab)
     
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
     if(autoCollapseGroupEnabled) {
-      const tab = await BackgroundController.getActiveTab()
-      const activeInfo = {tabId: tab.id, windowId: tab.windowId}
+      const activeInfo = {tabId: activeTab.id, windowId: activeTab.windowId}
       await BackgroundController.collapseOtherGroupsInWindow(activeInfo)
     }
   }
@@ -422,16 +413,16 @@ importScripts('/background/tab_recall.js')
     const status = await BackgroundController.getAutoCollapseStatus()
     
     if(status) {
-      const currentTab = await BackgroundController.getActiveTab()
-      return await BackgroundController.collapseOtherGroupsInWindow({tabId: currentTab.id, windowId: currentTab.windowId})
+      const activeTab = await BackgroundController.getActiveTab()
+      return await BackgroundController.collapseOtherGroupsInWindow({tabId: activeTab.id, windowId: activeTab.windowId})
     }
   }
 
   // flagging
   static async applyFlag(flagNumber) {
-    const currentTab = await BackgroundController.getActiveTab()
+    const activeTab = await BackgroundController.getActiveTab()
     
-    return await Flagging.flagTab(flagNumber, {tabId: currentTab.id})  
+    return await Flagging.flagTab(flagNumber, {tabId: activeTab.id})  
   }
 
   static async goToFlag(flagNumber) {
