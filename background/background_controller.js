@@ -186,8 +186,7 @@ importScripts('/background/tab_recall.js')
     await Sorting.execute(tabs, activeTab)
 
     if(autoCollapseGroupEnabled) {
-      const activeInfo = {tabId: activeTab.id, windowId: activeTab.windowId}
-      await BackgroundController.collapseOtherGroupsInWindow(activeInfo)
+      await BackgroundController.collapseOtherGroupsInWindow(activeTab)
     }
   }
 
@@ -272,21 +271,16 @@ importScripts('/background/tab_recall.js')
 
   // tabGroups
   /**
-   * collapses all other groups in the current window than the activeInfo's
-   * @param {object} activeInfo see: https://developer.chrome.com/docs/extensions/reference/tabs/#event-onActivated
+   * collapses all groups in the current window except the activeTab's
+   * @param {Tab} activeTab see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
   */
-  static async collapseOtherGroupsInWindow(activeInfo) {
-    const {tabId, windowId} = activeInfo
+  static async collapseOtherGroupsInWindow(activeTab) {
     // get all non-collapsed groups in windowId
-    const allGroups = await Promises.chrome.tabGroups.query({collapsed: false, windowId})
+    const allGroups = await Promises.chrome.tabGroups.query({collapsed: false, windowId: activeTab.windowId})
 
-    // get the Tab for tabId and grab it's groupId
-    const activeTab = await Promises.chrome.tabs.get(tabId)
-    const {groupId} = activeTab
-    
     //filter groupId out of allGroups
-    const filteredGroups = allGroups.filter(group=>{
-      return group.id != groupId
+    const filteredGroups = allGroups.filter(group => {
+      return group.id != activeTab.groupId
     })
 
     // collapse filterGroups
@@ -364,8 +358,7 @@ importScripts('/background/tab_recall.js')
     
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
     if(autoCollapseGroupEnabled) {
-      const activeInfo = {tabId: activeTab.id, windowId: activeTab.windowId}
-      await BackgroundController.collapseOtherGroupsInWindow(activeInfo)
+      await BackgroundController.collapseOtherGroupsInWindow(activeTab)
     }
   }
 
@@ -414,7 +407,7 @@ importScripts('/background/tab_recall.js')
     
     if(status) {
       const activeTab = await BackgroundController.getActiveTab()
-      return await BackgroundController.collapseOtherGroupsInWindow({tabId: activeTab.id, windowId: activeTab.windowId})
+      return await BackgroundController.collapseOtherGroupsInWindow(activeTab)
     }
   }
 

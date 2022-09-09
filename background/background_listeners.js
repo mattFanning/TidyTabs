@@ -37,7 +37,8 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   setTimeout(async () => {
     await TabRecall.addTabInfo(activeInfo)
     if(await BackgroundController.getAutoCollapseStatus()) {
-      BackgroundController.collapseOtherGroupsInWindow(activeInfo)
+      const tab = await Promises.chrome.tabs.get(activeInfo.tabId)
+      BackgroundController.collapseOtherGroupsInWindow(tab)
     }
   }, 500)
 })
