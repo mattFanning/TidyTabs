@@ -66,17 +66,6 @@ importScripts('/background/tab_recall.js')
         returnedValue = await BackgroundController.collapseAllGroups()
         break
 
-    // sweep
-      case "sweep_groups_to_beginning":
-        returnedValue = await BackgroundController.sweepGroupsToBeginning()
-        break
-      case "sweep_groups_to_end":
-        returnedValue = await BackgroundController.sweepGroupsToEnd()
-        break
-      case "sweep_ungrouped_tabs":
-      returnedValue = await BackgroundController.sweepUnGroupedTabs()
-      break
-
     // auto collapse
       case "auto_collapse_groups_status":
         returnedValue = await BackgroundController.getAutoCollapseStatus()
@@ -86,6 +75,28 @@ importScripts('/background/tab_recall.js')
         break
       case "auto_collapse_groups_callback":
         returnedValue = await BackgroundController.callbackAutoCollapseStatus()        
+        break
+
+    // sweep
+      case "sweep_groups_to_beginning":
+        returnedValue = await BackgroundController.sweepGroupsToBeginning()
+        break
+      case "sweep_groups_to_end":
+        returnedValue = await BackgroundController.sweepGroupsToEnd()
+        break
+      case "sweep_ungrouped_tabs":
+        returnedValue = await BackgroundController.sweepAllUnGroupedTabs()
+        break
+
+    // auto sweep into dust pile
+      case "auto_sweep_ungrouped_tabs_status":
+        returnedValue = await BackgroundController.getAutoSweepTabStatus()  
+        break
+      case "auto_sweep_ungrouped_tabs_toggle":
+        returnedValue = await BackgroundController.toggleAutoSweepTabStatus()
+        break
+      case "auto_sweep_ungrouped_tabs_callback":
+        returnedValue = await BackgroundController.callbackAutoSweepTabStatus()
         break
 
     // sorting
@@ -350,11 +361,16 @@ importScripts('/background/tab_recall.js')
   /**
    * Sweeps all ungrouped tabs into the dust group 
    */
-   static async sweepUnGroupedTabs() {
+   static async sweepAllUnGroupedTabs() {
     // get all ungrouped tabs
     const ungroupedTabs = await Promises.chrome.tabs.query({groupId: chrome.tabGroups.TAB_GROUP_ID_NONE})
+    return BackgroundController.#sweepUnGroupedTabs(ungroupedTabs)
+  }
+
+  static async #sweepUnGroupedTabs(tabs) {
     const activeTab = await BackgroundController.getActiveTab()
-    await Sorting.moveToDustPile(ungroupedTabs, activeTab)
+    const dustGroupId = await Sorting.moveToDustPile(tabs, activeTab)
+    activeTab.groupId = dustGroupId
     
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
     if(autoCollapseGroupEnabled) {
@@ -379,6 +395,35 @@ importScripts('/background/tab_recall.js')
       }
     }
     return groupPositions
+  }
+
+  // auto sweep
+  static async getAutoSweepTabStatus() {
+    const KEY = "auto_sweep_ungrouped_tabs_status"
+    const data = await Promises.chrome.storage.sync.get(KEY)
+    console.log(`\tFetch: %c${JSON.stringify(data)}`, "color:green")
+
+    if(Object.keys(data).length === 0) {
+      return false
+    }
+
+    return data[KEY]
+  }
+
+  static async toggleAutoSweepTabStatus() {
+    const KEY = "auto_sweep_ungrouped_tabs_status"
+    const status = await BackgroundController.getAutoSweepTabStatus()
+    const payload = {[KEY] : !status}
+    console.log(`\tsetting to: %c${JSON.stringify(payload)}`, "color:green")
+    return await Promises.chrome.storage.sync.set({[KEY] : !status})
+  }
+
+  static async callbackAutoSweepTabStatus() {
+    const status = await BackgroundController.getAutoSweepTabStatus()
+    
+    if(status) {
+      return await BackgroundController.sweepAllUnGroupedTabs()
+    }
   }
 
   // autoCollapse

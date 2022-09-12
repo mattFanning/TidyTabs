@@ -42,3 +42,13 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     }
   }, 500)
 })
+
+chrome.tabs.onCreated.addListener(async (tab) => {
+  console.log(JSON.stringify(tab))
+  setTimeout(async () => {
+    if(tab.groupId == chrome.tabGroups.TAB_GROUP_ID_NONE && 
+       await BackgroundController.getAutoSweepTabStatus()) {
+      BackgroundController.sweepAllUnGroupedTabs()
+    }
+  }, 500)
+})

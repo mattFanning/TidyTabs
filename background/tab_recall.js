@@ -1,11 +1,11 @@
 /*importScripts('/wrappers.js') <- already included thru parent*/
 
-// TODO: setup TabRecall with previousTab[] so if the tab we are switching to doesn't exist (closed), we can switch to the 1 before
 /**
  * The rules for storing and recalling previously active tab
  */
 class TabRecall {  
   static #STORE_KEY = "tab_recall"
+  static #PREVIOUS_TAB_SIZE = 5
   
   /**
    * Adds ActiveInfo for a tab to the TabRecall 
@@ -20,16 +20,10 @@ class TabRecall {
       recallPayload = {currentTab: tabInfo, previousTabs: [tabInfo]}
     }
 
-    if('previousTab' in recallPayload) {
-      recallPayload.previousTabs = []
-      recallPayload.previousTabs.unshift(recallPayload.previousTab)
-      delete recallPayload.previousTab
-    }
-
     // adjust payload for incoming tabInfo
     recallPayload.previousTabs.unshift(recallPayload.currentTab)
-    if(recallPayload.previousTabs.length > 5) {
-      recallPayload.previousTabs = recallPayload.previousTabs.slice(0, 5)
+    if(recallPayload.previousTabs.length > TabRecall.#PREVIOUS_TAB_SIZE) {
+      recallPayload.previousTabs = recallPayload.previousTabs.slice(0, TabRecall.#PREVIOUS_TAB_SIZE)
     }
     recallPayload.currentTab = tabInfo
     return await TabRecall.#write(recallPayload)

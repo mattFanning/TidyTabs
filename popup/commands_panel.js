@@ -24,7 +24,8 @@ class CommandPanel {
     const $sweep = await CommandPanel.#buttonGroup({color:'green', label:'Sweep', buttons:[
       {label:'Groups To Beginning', message:'sweep_groups_to_beginning'},
       {label:'Groups To End', message:'sweep_groups_to_end'},
-      {label:'Ungrouped Tabs Into Dust Pile &#128173;', message: 'sweep_ungrouped_tabs'}] 
+      {label:'Ungrouped Tabs Into Dust Pile &#128173;', message: 'sweep_ungrouped_tabs'},
+      {type: 'toggle', label:'Into Dust Pile Automatically &#128173;', messageGroup: 'auto_sweep_ungrouped_tabs'}] 
     })
     const $goToFlag = await CommandPanel.#buttonGroup({color:'pink', label:'Go To', buttons:[
       {label:'Flag #1', message:'go_to_flag', arg1: 1},

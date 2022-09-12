@@ -103,6 +103,7 @@ class Sorting {
       console.log("dustGroup found")
       const dustGroupId = groups[0].id
       await Promises.chrome.tabs.group({groupId: dustGroupId, tabIds: tabIds})
+      return dustGroupId
     }
     else {
       console.log("dustGroup not found")
@@ -112,6 +113,7 @@ class Sorting {
       })
       const updateProperties = {title: "💭"}
       await Promises.chrome.tabGroups.update(newGroupId, updateProperties)
+      return newGroupId
     }
   }
 
