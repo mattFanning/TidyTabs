@@ -50,9 +50,8 @@ class Sorting {
   /**
    * Executes the sorting functionality on the array of tabs.
    * @param {Tab[]} tabs see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
-   * @param {Tab} activeTab see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
   */
-  static async execute(tabs, activeTab) {
+  static async execute(tabs) {
     const sortRules = await Sorting.getRules()
     for (const rule of sortRules) {
       const regex = new RegExp(rule.address)
@@ -74,10 +73,10 @@ class Sorting {
       } 
       else {
         console.log("Group not found. Creating")
-        
+        const {id} = await Promises.chrome.windows.getCurrent({})
         const newGroupId = await Promises.chrome.tabs.group({
           tabIds: matchedTabIds, 
-          createProperties: {windowId: activeTab.windowId}
+          createProperties: {windowId: id}
         })
         const updateProperties = rule.groupProperties
         await Promises.chrome.tabGroups.update(newGroupId, updateProperties)

@@ -58,7 +58,6 @@ importScripts('/background/tab_recall.js')
         break;
 
     // collapse
-      // BUG - this doesn't work.  I think "current window" is the actual popup window :(
       case "collapse_all_groups_in_window":
         returnedValue = await BackgroundController.collapseAllGroupsInWindow()
         break
@@ -191,12 +190,12 @@ importScripts('/background/tab_recall.js')
   }
 
   static async #sortTabsFrom(tabs) {
+    const preSortActiveTab = await BackgroundController.getActiveTab()
+    await Sorting.execute(tabs)
+    
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
-    const activeTab = await BackgroundController.getActiveTab()
-
-    await Sorting.execute(tabs, activeTab)
-
     if(autoCollapseGroupEnabled) {
+      const activeTab = await BackgroundController.getActiveTabFrom(preSortActiveTab.windowId)
       await BackgroundController.collapseOtherGroupsInWindow(activeTab)
     }
   }
@@ -235,8 +234,8 @@ importScripts('/background/tab_recall.js')
     let seenURLs = []  //  [{url: "http://www.x.com", id: 5, active: false}]
     for(const tab of tabs) {
       const searchResult = seenURLs.find(seenTab => seenTab.url === tab.url);
-      // BUG - should respect focussed window when: multiple windows, each with duplicate active tab
       if(searchResult) {
+        // BUG - should respect focussed window when: multiple windows, each with duplicate active tab
         if(tab.active) {
           seenURLs = seenURLs.filter(seenTab => seenTab.url !== searchResult.url)
           seenURLs.push({url: tab.url, id: tab.id, active: tab.active})
@@ -253,6 +252,12 @@ importScripts('/background/tab_recall.js')
 
   static async getActiveTab() {
     let queryOptions = { active: true, currentWindow: true }
+    let tab = await Promises.chrome.tabs.query(queryOptions)
+    return tab[0]
+  }
+
+  static async getActiveTabFrom(windowId) {
+    let queryOptions = { active: true, windowId: windowId }
     let tab = await Promises.chrome.tabs.query(queryOptions)
     return tab[0]
   }
