@@ -373,12 +373,12 @@ importScripts('/background/tab_recall.js')
   }
 
   static async #sweepUnGroupedTabs(tabs) {
-    const activeTab = await BackgroundController.getActiveTab()
-    const dustGroupId = await Sorting.moveToDustPile(tabs, activeTab)
-    activeTab.groupId = dustGroupId
+    const preSortActiveTab = await BackgroundController.getActiveTab()
+    await Sorting.moveToDustPile(tabs)
     
     const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
     if(autoCollapseGroupEnabled) {
+      const activeTab = await BackgroundController.getActiveTabFrom(preSortActiveTab.windowId)
       await BackgroundController.collapseOtherGroupsInWindow(activeTab)
     }
   }

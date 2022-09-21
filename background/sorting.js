@@ -62,7 +62,6 @@ class Sorting {
       }
 
       const matchedTabIds = regexMatchedTabs.map(tab => tab.id)
-
       const groups = await Promises.chrome.tabGroups.query({title: rule.groupProperties.title}) 
       if(groups.length > 0) {
         console.log("Group found")
@@ -73,10 +72,10 @@ class Sorting {
       } 
       else {
         console.log("Group not found. Creating")
-        const {id} = await Promises.chrome.windows.getCurrent({})
+        const preSortActiveTab = await BackgroundController.getActiveTab()
         const newGroupId = await Promises.chrome.tabs.group({
           tabIds: matchedTabIds, 
-          createProperties: {windowId: id}
+          createProperties: {windowId: preSortActiveTab.windowId}
         })
         const updateProperties = rule.groupProperties
         await Promises.chrome.tabGroups.update(newGroupId, updateProperties)
@@ -88,9 +87,8 @@ class Sorting {
   /**
    * Moves all tabs into "dust pile" group
    * @param {Tab[]} tabs see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
-   * @param {Tab} activeTab see: https://developer.chrome.com/docs/extensions/reference/tabs/#type-Tab
    */
-  static async moveToDustPile(tabs, activeTab) {
+  static async moveToDustPile(tabs) {
     console.log('moveToDustPile executed')
     if(tabs.length <= 0) {
       return false
@@ -106,9 +104,10 @@ class Sorting {
     }
     else {
       console.log("dustGroup not found")
+      const preSortActiveTab = await BackgroundController.getActiveTab()
       const newGroupId = await Promises.chrome.tabs.group({
         tabIds: tabIds, 
-        createProperties: {windowId: activeTab.windowId}
+        createProperties: {windowId: preSortActiveTab.windowId}
       })
       const updateProperties = {title: "💭"}
       await Promises.chrome.tabGroups.update(newGroupId, updateProperties)
