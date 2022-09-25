@@ -1,4 +1,4 @@
-/*importScripts('/wrappers.js') <- already included thru parent*/
+/*importScripts('/promises.js') <- already included thru parent*/
 
 /**
  * The rules and logic for sorting tabs.

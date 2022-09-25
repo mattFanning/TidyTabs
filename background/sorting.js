@@ -1,4 +1,4 @@
-/*importScripts('/wrappers.js') <- already included thru parent*/
+/*importScripts('/promises.js') <- already included thru parent*/
 
 
 /**
@@ -54,24 +54,27 @@ class Sorting {
   static async execute(tabs) {
     const sortRules = await Sorting.getRules()
     for (const rule of sortRules) {
-      const regex = new RegExp(rule.address)
-      
-      const regexMatchedTabs = tabs.filter(tab => regex.test(tab.url))
+      //for each rule, determine which tabs match for sorting.
+      const ruleAddressRegex = new RegExp(rule.address)
+      const regexMatchedTabs = tabs.filter(tab => ruleAddressRegex.test(tab.url))
       if(regexMatchedTabs.length <= 0) {
-        continue
+        continue  //nothing to do if no tabs match this rule
       }
 
       const matchedTabIds = regexMatchedTabs.map(tab => tab.id)
-      const groups = await Promises.chrome.tabGroups.query({title: rule.groupProperties.title}) 
-      if(groups.length > 0) {
-        console.log("Group found")
-        const foundGroupId = groups[0].id  
 
-        await Promises.chrome.tabs.group({groupId: foundGroupId, tabIds: matchedTabIds})
-        // await Promises.chrome.tabs.update(id, {active: true})
+      //determine if the sorting group already exists or if we have to create.
+      const allGroups = await Promises.chrome.tabGroups.query({})
+      const FLAGS = "[0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]*"
+      const ruleTitleRegex = new RegExp(`^${FLAGS}${rule.groupProperties.title}$`, "u")
+      const matchedGroups = allGroups.filter(group => ruleTitleRegex.test(group.title))
+      if(matchedGroups.length > 0) {
+        // console.log("Group found")
+        const matchedGroupId = matchedGroups[0].id  
+        await Promises.chrome.tabs.group({groupId: matchedGroupId, tabIds: matchedTabIds})
       } 
       else {
-        console.log("Group not found. Creating")
+        // console.log("Group not found. Creating")
         const preSortActiveTab = await BackgroundController.getActiveTab()
         const newGroupId = await Promises.chrome.tabs.group({
           tabIds: matchedTabIds, 

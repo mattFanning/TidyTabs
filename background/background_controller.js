@@ -1,6 +1,7 @@
-importScripts('/wrappers.js')
+importScripts('/promises.js')
 importScripts('/background/sorting.js')
 importScripts('/background/flagging.js')
+importScripts('/background/tabGroupFlagger.js')
 importScripts('/background/tab_recall.js')
 
 /**
@@ -465,7 +466,10 @@ importScripts('/background/tab_recall.js')
   static async applyFlag(flagNumber) {
     const activeTab = await BackgroundController.getActiveTab()
     
-    return await Flagging.flagTab(flagNumber, {tabId: activeTab.id})  
+    const flagTabResponse = await Flagging.flagTab(flagNumber, {tabId: activeTab.id})
+
+    const tabGroupFlaggerResponce = await TabGroupFlagger.addTo(flagNumber, activeTab.groupId)
+    return tabGroupFlaggerResponce
   }
 
   static async goToFlag(flagNumber) {

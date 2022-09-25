@@ -1,5 +1,6 @@
 importScripts('/background/background_controller.js') /*
   -> importScripts('/background/tab_recall.js')
+  -> importScripts('/promises.js')
 */
 
 /**
