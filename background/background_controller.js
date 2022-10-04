@@ -122,7 +122,13 @@ importScripts('/background/tab_recall.js')
       case "recall_tab":
         returnedValue = await TabRecall.activatePreviousTab()
         break
-
+    // tab shortcuts
+      case "last_tab":
+        returnedValue = await BackgroundController.goToLastTab()
+        break
+      case "first_tab":
+        returnedValue = await BackgroundController.goToFirstTab()
+        break
       default:
         console.error(`unknown command: %c${message}`, "color:red")
     }
@@ -370,18 +376,7 @@ importScripts('/background/tab_recall.js')
    static async sweepAllUnGroupedTabs() {
     // get all ungrouped tabs
     const ungroupedTabs = await Promises.chrome.tabs.query({groupId: chrome.tabGroups.TAB_GROUP_ID_NONE})
-    return BackgroundController.#sweepUnGroupedTabs(ungroupedTabs)
-  }
-
-  static async #sweepUnGroupedTabs(tabs) {
-    const preSortActiveTab = await BackgroundController.getActiveTab()
-    await Sorting.moveToDustPile(tabs)
-    
-    const autoCollapseGroupEnabled = await BackgroundController.getAutoCollapseStatus()
-    if(autoCollapseGroupEnabled) {
-      const activeTab = await BackgroundController.getActiveTabFrom(preSortActiveTab.windowId)
-      await BackgroundController.collapseOtherGroupsInWindow(activeTab)
-    }
+    return await Sorting.moveToDustPile(ungroupedTabs)
   }
 
   /**
@@ -474,5 +469,23 @@ importScripts('/background/tab_recall.js')
 
   static async goToFlag(flagNumber) {
     return await Flagging.activateFlag(flagNumber) 
+   }
+
+   // tab shortcuts
+
+   static async goToLastTab() {
+    // query for all tabs in current window.
+    const {tabs} = await Promises.chrome.windows.getCurrent({populate: true})
+    const lastTab = tabs[tabs.length -1]
+    const tabUpdate = await Promises.chrome.tabs.update(lastTab.id, {active: true})
+    return true
+   }
+
+   static async goToFirstTab() {
+    // query for all tabs in current window.
+    const {tabs} = await Promises.chrome.windows.getCurrent({populate: true})
+    const firstTab = tabs[0]
+    const tabUpdate = await Promises.chrome.tabs.update(firstTab.id, {active: true})
+    return true
    }
 }

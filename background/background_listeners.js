@@ -8,19 +8,34 @@ importScripts('/background/background_controller.js') /*
  * @listens chrome.commands.onCommand
 */
 chrome.commands.onCommand.addListener((command) => {
+  //all of this is required simply so I can arrange the order of commmands in the extension shortcuts view.
   const goToFlag = /go_to_flag_\d/
   const applyFlag = /apply_flag_\d/
-  
-  if (goToFlag.test(command)) {
-    const specificFlagNumber = command.slice(command.length -1, command.length)
-    BackgroundController.executeMessage({message: "go_to_flag", arg1: specificFlagNumber})
-  }
-  else if (applyFlag.test(command)) {
-    const specificFlagNumber = command.slice(command.length -1, command.length)
-    BackgroundController.executeMessage({message: "apply_flag", arg1: specificFlagNumber})
-  }
-  else {
-    BackgroundController.executeMessage(command)
+  const recallTab = /recall_tab/
+  const firstTab = /first_tab/
+  const lastTab = /last_tab/
+
+  let specificFlagNumber;
+  switch(true) {
+    case goToFlag.test(command):
+      specificFlagNumber = command.slice(command.length -1, command.length)
+      BackgroundController.executeMessage({message: "go_to_flag", arg1: specificFlagNumber})
+      break
+    case applyFlag.test(command):
+      specificFlagNumber = command.slice(command.length -1, command.length)
+      BackgroundController.executeMessage({message: "apply_flag", arg1: specificFlagNumber})
+      break
+    case recallTab.test(command):
+      BackgroundController.executeMessage({message: "recall_tab"})
+      break
+    case firstTab.test(command):
+      BackgroundController.executeMessage({message: "first_tab"})
+      break
+    case lastTab.test(command):
+      BackgroundController.executeMessage({message: "last_tab"})
+      break
+    default:
+      BackgroundController.executeMessage(command)
   }
 })
 
@@ -39,17 +54,16 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     await TabRecall.addTabInfo(activeInfo)
     if(await BackgroundController.getAutoCollapseStatus()) {
       const tab = await Promises.chrome.tabs.get(activeInfo.tabId)
-      BackgroundController.collapseOtherGroupsInWindow(tab)
+      await BackgroundController.collapseOtherGroupsInWindow(tab)
     }
   }, 500)
 })
 
 chrome.tabs.onCreated.addListener(async (tab) => {
-  console.log(JSON.stringify(tab))
   setTimeout(async () => {
-    if(tab.groupId == chrome.tabGroups.TAB_GROUP_ID_NONE && 
-       await BackgroundController.getAutoSweepTabStatus()) {
-      BackgroundController.sweepAllUnGroupedTabs()
+    if(await BackgroundController.getAutoSweepTabStatus() && 
+       tab.groupId == chrome.tabGroups.TAB_GROUP_ID_NONE) {
+      await BackgroundController.sweepAllUnGroupedTabs()
     }
   }, 500)
 })

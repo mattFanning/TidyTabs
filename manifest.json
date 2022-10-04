@@ -12,87 +12,30 @@
     "service_worker": "service_worker.js"
   },
   "commands": {
-    "_execute_action": {
-    },
-    "apply_flag_1": {
-      "suggested_key": {
-        "default": "Alt+Shift+1",
-        "mac": "Alt+Shift+1"
-      },
-      "description": "Flag 1: Apply to current tab"
-    },
-    "go_to_flag_1": {
-      "suggested_key": {
-        "default": "Alt+1",
-        "mac": "Alt+1"
-      },
-      "description": "Flag 1: Switch to flagged tab"
-    },
-    "apply_flag_2": {
-      "suggested_key": {
-        "default": "Alt+Shift+2",
-        "mac": "Alt+Shift+2"
-      },
-      "description": "Flag 2: Apply to current tab"
-    },
-    "go_to_flag_2": {
-      "suggested_key": {
-        "default": "Alt+2",
-        "mac": "Alt+2"
-      },
-      "description": "Flag 2: Switch to flagged tab"
-    },
-    "apply_flag_3": {
-      "description": "Flag 3: Apply to current tab"
-    },
-    "go_to_flag_3": {
-      "description": "Flag 3: Switch to flagged tab"
-    },
-    "apply_flag_4": {
-      "description": "Flag 4: Apply to current tab"
-    },
-    "go_to_flag_4": {
-      "description": "Flag 4: Switch to flagged tab"
-    },
-    "apply_flag_5": {
-      "description": "Flag 5: Apply to current tab"
-    },
-    "go_to_flag_5": {
-      "description": "Flag 5: Switch to flagged tab"
-    },
-    "apply_flag_6": {
-      "description": "Flag 6: Apply to current tab"
-    },
-    "go_to_flag_6": {
-      "description": "Flag 6: Switch to flagged tab"
-    },
-    "apply_flag_7": {
-      "description": "Flag 7: Apply to current tab"
-    },
-    "go_to_flag_7": {
-      "description": "Flag 7: Switch to flagged tab"
-    },
-    "apply_flag_8": {
-      "description": "Flag 8: Apply to current tab"
-    },
-    "go_to_flag_8": {
-      "description": "Flag 8: Switch to flagged tab"
-    },
-    "apply_flag_9": {
-      "description": "Flag 9: Apply to current tab"
-    },
-    "go_to_flag_9": {
-      "description": "Flag 9: Switch to flagged tab"
-    },
-    "apply_flag_0": {
-      "description": "Flag 0: Apply to current tab"
-    },
-    "go_to_flag_0": {
-      "description": "Flag 0: Switch to flagged tab"
-    },
-    "recall_tab": {
-      "description": "Switch to previous tab"
-    }
+    "_execute_action": {},
+    "caa.apply_flag_1": {"description": "Flag 1: Apply"},
+    "cab.1g.go_to_flag_1": {"description": "Flag 1: Switch"},
+    "cac.apply_flag_2": {"description": "Flag 2: Apply"},
+    "cad.go_to_flag_2": {"description": "Flag 2: Switch"},
+    "cae.apply_flag_3": {"description": "Flag 3: Apply"},
+    "caf.go_to_flag_3": {"description": "Flag 3: Switch"},
+    "cag.apply_flag_4": {"description": "Flag 4: Apply"},
+    "cah.go_to_flag_4": {"description": "Flag 4: Switch"},
+    "cai.apply_flag_5": {"description": "Flag 5: Apply"},
+    "caj.go_to_flag_5": {"description": "Flag 5: Switch"},
+    "cak.apply_flag_6": {"description": "Flag 6: Apply"},
+    "cal.go_to_flag_6": {"description": "Flag 6: Switch"},
+    "cam.apply_flag_7": {"description": "Flag 7: Apply"},
+    "can.go_to_flag_7": {"description": "Flag 7: Switch"},
+    "cao.apply_flag_8": {"description": "Flag 8: Apply"},
+    "cap.go_to_flag_8": {"description": "Flag 8: Switch"},
+    "caq.apply_flag_9": {"description": "Flag 9: Apply"},
+    "car.go_to_flag_9": {"description": "Flag 9: Switch"},
+    "cas.apply_flag_0": {"description": "Flag 0: Apply"},
+    "cat.go_to_flag_0": {"description": "Flag 0: Switch"},
+    "cau.recall_tab": {"description": "Switch to previous tab"},
+    "cav.last_tab": {"description": "Switch to last tab"},
+    "caw.first_tab": {"description": "Switch to first tab"}
   },
   "permissions": ["tabs", "tabGroups", "storage"],
   "action": {
