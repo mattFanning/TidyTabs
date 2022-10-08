@@ -48,6 +48,7 @@ class Flagging {
 
   /**
    * Retrieves the stored flag array or []
+   * Flag Array is indexed by flagId
    * @async 
    * @return {Promise<FlaggingTabInfo[]>} 
   */
@@ -100,4 +101,5 @@ class Flagging {
  * A payload of tabId and windowId to specify a tab for flagging.
  * @typedef {object} FlaggingTabInfo
  * @property {number} tabId - the id of the tab to flag
+ * @property {number} windowId - the id of the window that tabId belongs to
  */

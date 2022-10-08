@@ -1,7 +1,7 @@
 importScripts('/promises.js')
 importScripts('/background/sorting.js')
 importScripts('/background/flagging.js')
-importScripts('/background/tabGroupFlagger.js')
+importScripts('/background/tab_group_flagger.js')
 importScripts('/background/tab_recall.js')
 
 /**

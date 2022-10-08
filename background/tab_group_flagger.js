@@ -13,7 +13,7 @@ class TabGroupFlagger{
     let title = group.title
     const flagMap = TabGroupFlagger.#emptyFlagMap()
 
-    const splitResult = TabGroupFlagger.#splitFlagsFromTabGroupTitle(group)
+    const splitResult = TabGroupFlagger.#splitFlagsFromTitle(group.title)
     if(splitResult) {
       //already had flags;  update flagMap before adding new flag
       const orignalChain = splitResult[1]  //[0]=flags+title; [1]=flags; [2]=title
@@ -35,9 +35,45 @@ class TabGroupFlagger{
     return await Promises.chrome.tabGroups.update(groupId, {title: updatedTitle})
   }
 
-static #splitFlagsFromTabGroupTitle(tabGroup) {
+  static async updateAllTabGroupFlags() {
+    const allGroups = await Promises.chrome.tabGroups.query({})
+    allGroups.forEach(async group => {
+      const titleComponents = TabGroupFlagger.getTitleComponents(group.title)
+      const flagMap = TabGroupFlagger.#emptyFlagMap()
+      const storedFlagArray = await Flagging.getFlags() // [{tabId:x, windowId:y},{},{tabId:x, windowId:y},{},{}]
+      const groupTabs = await Promises.chrome.tabs.query({groupId: group.id})
+      groupTabs.forEach(tab => {
+        const index = storedFlagArray.findIndexOf(flaggingTabInfo => {
+          flaggingTabInfo.tabId == tab.id && flaggingTabInfo.windowId == tab.windowId
+        })
+        if(index > -1) {
+          flagMap[index] = true
+        }
+      })
+      // convert flagMap to emoji String
+      const flagChain = TabGroupFlagger.#flagMapToString(flagMap)
+
+      // update groups title with emoji chain
+      await Promises.chrome.tabGroups.update(group.id, {title: `${flagChain}${titleComponents.title}`})
+    })
+  }
+
+  static getTitleComponents(title) {
+    const components = {flags: undefined, title: undefined}
+    const results = TabGroupFlagger.#splitFlagsFromTitle(title)
+    if(results) {
+      components.flags = results[1]
+      components.title = results[2]
+    }
+    else {
+      components.title = title
+    }
+    return components
+  }
+
+  static #splitFlagsFromTitle(title) {
     const titleSplittingRegex = new RegExp("^([0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]+)(.*)$","u")
-    return tabGroup.title.match(titleSplittingRegex)
+    return title.match(titleSplittingRegex)
   }
 
   static #emptyFlagMap() {
