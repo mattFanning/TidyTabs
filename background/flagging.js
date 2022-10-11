@@ -62,6 +62,17 @@ class Flagging {
   }
 
   /**
+   * Clears the individual flag
+   * @async
+   * @param {number} flagId
+   */
+  static async clearFlag(flagId) {
+    let flags = await Flagging.getFlags()
+    flags[flagId] = {}
+    return Flagging.#write(flags)
+  }
+
+  /**
    * Clears the flag array.
    * @async
   */

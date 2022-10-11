@@ -462,9 +462,8 @@ importScripts('/background/tab_recall.js')
     const activeTab = await BackgroundController.getActiveTab()
     
     const flagTabResponse = await Flagging.flagTab(flagNumber, {tabId: activeTab.id})
-
-    const tabGroupFlaggerResponce = await TabGroupFlagger.addTo(flagNumber, activeTab.groupId)
-    return tabGroupFlaggerResponce
+    TabGroupFlagger.updateAllTabGroupFlags()
+    return flagTabResponse
   }
 
   static async goToFlag(flagNumber) {

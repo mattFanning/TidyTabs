@@ -1,61 +1,46 @@
 
 class TabGroupFlagger{
   static #ALL_FLAGS = ["0️⃣","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣"]
-  
-  static async addTo(flagId, groupId) {
-    // get current info for groupId
-    const group = await Promises.chrome.tabGroups.get(groupId)
-    if(group == undefined) {
-      return
-    }
+  static #EMPTY_FLAG_MAP = {
+    "0️⃣": false, "1️⃣": false, "2️⃣": false, "3️⃣": false, "4️⃣": false,
+    "5️⃣": false, "6️⃣": false, "7️⃣": false, "8️⃣": false, "9️⃣": false
+  }
 
-    console.log(`TabGroup.title:\t${group.title}`)
-    let title = group.title
-    const flagMap = TabGroupFlagger.#emptyFlagMap()
-
-    const splitResult = TabGroupFlagger.#splitFlagsFromTitle(group.title)
-    if(splitResult) {
-      //already had flags;  update flagMap before adding new flag
-      const orignalChain = splitResult[1]  //[0]=flags+title; [1]=flags; [2]=title
-      console.log(`original emoji chain:\t${orignalChain}`)
-      TabGroupFlagger.#updateFlagMapWith(flagMap, orignalChain)
-      title = splitResult[2]
-    }
-
-    //add new flag
-    flagMap[TabGroupFlagger.#ALL_FLAGS[flagId]] = true
-
-    //build the updated emoji chain
-    const updatedChain = TabGroupFlagger.#flagMapToString(flagMap)
-    console.log(`new emoji chain:     \t${updatedChain}`)
-
-    //attach the new chain to the actual title
-    const updatedTitle = `${updatedChain}${title}`
-    console.log(`updated title:\t${updatedTitle}`)
-    return await Promises.chrome.tabGroups.update(groupId, {title: updatedTitle})
+  static getFlagForIndex(flagIndex) {
+    return TabGroupFlagger.#ALL_FLAGS[flagIndex]
   }
 
   static async updateAllTabGroupFlags() {
+    // clear all tabGroup flags
+    const groupPromises = new Array()
     const allGroups = await Promises.chrome.tabGroups.query({})
-    allGroups.forEach(async group => {
+    for(const group of allGroups) {
       const titleComponents = TabGroupFlagger.getTitleComponents(group.title)
-      const flagMap = TabGroupFlagger.#emptyFlagMap()
-      const storedFlagArray = await Flagging.getFlags() // [{tabId:x, windowId:y},{},{tabId:x, windowId:y},{},{}]
-      const groupTabs = await Promises.chrome.tabs.query({groupId: group.id})
-      groupTabs.forEach(tab => {
-        const index = storedFlagArray.findIndexOf(flaggingTabInfo => {
-          flaggingTabInfo.tabId == tab.id && flaggingTabInfo.windowId == tab.windowId
-        })
-        if(index > -1) {
-          flagMap[index] = true
-        }
-      })
-      // convert flagMap to emoji String
-      const flagChain = TabGroupFlagger.#flagMapToString(flagMap)
+      groupPromises.push(Promises.chrome.tabGroups.update(group.id, {title: titleComponents.title}))
+    }
+    await Promise.all(groupPromises)
+    
+    // apply the flags to the appropriate groups.
+    const allFlaggingTabInfo = await Flagging.getFlags()
+    let index = -1
+    for(const info of allFlaggingTabInfo) {
+      index++
+      if(Object.keys(info).length === 0) { 
+        continue 
+      }
 
-      // update groups title with emoji chain
-      await Promises.chrome.tabGroups.update(group.id, {title: `${flagChain}${titleComponents.title}`})
-    })
+      const tab = await Promises.chrome.tabs.get(info.tabId)
+      if(tab === undefined) {
+        //remove dead flag from Flagging
+        Flagging.clearFlag(index)
+        continue
+      }
+      const tabGroup = await Promises.chrome.tabGroups.get(tab.groupId)
+
+      const updatedTitle = TabGroupFlagger.addFlagToTitleByIndex(index, tabGroup.title)
+      await Promises.chrome.tabGroups.update(tabGroup.id, {title: updatedTitle})  
+    }
+    return true
   }
 
   static getTitleComponents(title) {
@@ -76,21 +61,31 @@ class TabGroupFlagger{
     return title.match(titleSplittingRegex)
   }
 
-  static #emptyFlagMap() {
-    return {
-      "0️⃣": false, "1️⃣": false, "2️⃣": false, "3️⃣": false, "4️⃣": false,
-      "5️⃣": false, "6️⃣": false, "7️⃣": false, "8️⃣": false, "9️⃣": false
-    }
+  static addFlagToTitleByIndex(flagIndex, title) {
+    const titleComponents = TabGroupFlagger.getTitleComponents(title)
+    const updatedFlags = TabGroupFlagger.addToFlagChainByIndex(flagIndex, titleComponents.flags)
+    return `${updatedFlags}${titleComponents.title}`
   }
 
-  static #updateFlagMapWith(flagMap, flagChainString) {
+  static addToFlagChainByIndex(flagIndex, flagChain) {
+    const flagMap = TabGroupFlagger.flagChainToMap(flagChain)
+    const flag = TabGroupFlagger.getFlagForIndex(flagIndex)
+    flagMap[flag] = true
+    return TabGroupFlagger.flagMapToChain(flagMap)
+  }
+
+  static flagChainToMap(flagChainString) {
+    const flagMap = Object.assign({},TabGroupFlagger.#EMPTY_FLAG_MAP)
     TabGroupFlagger.#ALL_FLAGS.forEach(flag => {
-      const flagPresent = new RegExp(flag, "u")
-      if(flagPresent.test(flagChainString)) flagMap[flag] = true
+      const isflagPresent = new RegExp(flag, "u")
+      if(isflagPresent.test(flagChainString)) {
+        flagMap[flag] = true
+      }
     })
+    return flagMap
   }
 
-  static #flagMapToString(flagMap) {
+  static flagMapToChain(flagMap) {
     let flagString = ""
     if(flagMap['0️⃣']) flagString += '0️⃣'
     if(flagMap['1️⃣']) flagString += '1️⃣'

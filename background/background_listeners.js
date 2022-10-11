@@ -67,3 +67,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
     }
   }, 500)
 })
+
+chrome.tabs.onRemoved.addListener(async (tab) => {
+  TabGroupFlagger.updateAllTabGroupFlags()
+})
