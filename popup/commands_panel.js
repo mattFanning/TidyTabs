@@ -2,9 +2,9 @@ class CommandPanel {
   static async generate() {
     const $buttonPanel = $("<div>", {id: `commands_panel`, class: `commands_panel`})
 
-    const $newTab = await CommandPanel.#buttonGroup({color:'grey', label:'New Tab', buttons:[
-      {label:'In Active Group', message:'new_tab_in_selected_group'},
-      {label:'In New Group', message:'new_tab_in_new_group'}] 
+    const $newTab = await CommandPanel.#buttonGroup({color:'grey', label:'Make', buttons:[
+      {label:'New Tab In Active Group', message:'new_tab_in_selected_group'},
+      {label:'New Tab In New Group', message:'new_tab_in_new_group'}] 
     })
     const $sort = await CommandPanel.#buttonGroup({color:'blue', label:'Sort', buttons:[
       {label:'Highlighted Tabs', message:'sort_highlighted_tabs'},
@@ -27,22 +27,25 @@ class CommandPanel {
       {label:'Ungrouped Tabs Into Dust Pile &#128173;', message: 'sweep_ungrouped_tabs'},
       {type: 'toggle', label:'Into Dust Pile Automatically &#128173;', messageGroup: 'auto_sweep_ungrouped_tabs'}] 
     })
-    const $goToFlag = await CommandPanel.#buttonGroup({color:'pink', label:'Go To', buttons:[
+    const $activateFlag = await CommandPanel.#buttonGroup({color:'pink', label:'Activate', buttons:[
       {label:'Flag #1', message:'go_to_flag', arg1: 1},
       {label:'Flag #2', message:'go_to_flag', arg1: 2},
       {label:'Flag #3', message:'go_to_flag', arg1: 3},
       {label:'Flag #4', message:'go_to_flag', arg1: 4},
-      {label:'Flag #5', message:'go_to_flag', arg1: 5},
-      {label:'Previous Tab', message:'recall_tab'}]
+      {label:'Flag #5', message:'go_to_flag', arg1: 5}]
     })
-    const $setFlag = await CommandPanel.#buttonGroup({color:'purple', label:'Flag Tab With', buttons:[
+    const $setFlag = await CommandPanel.#buttonGroup({color:'purple', label:'Apply', buttons:[
       {label:'Flag #1', message:'apply_flag', arg1: 1},
       {label:'Flag #2', message:'apply_flag', arg1: 2},
       {label:'Flag #3', message:'apply_flag', arg1: 3},
       {label:'Flag #4', message:'apply_flag', arg1: 4},
       {label:'Flag #5', message:'apply_flag', arg1: 5}] 
     })
-    const $cyan = await CommandPanel.#buttonGroup({color:'cyan', label:'Cyan', buttons:[]})
+    const $cyan = await CommandPanel.#buttonGroup({color:'cyan', label:'Go To', buttons:[
+      {label:'Previous Tab', message:'recall_tab'},
+      {label:'First Tab', message:'first_tab'},
+      {label:'Last Tab', message:'last_tab'}]
+    })
     const $orange = await CommandPanel.#buttonGroup({color:'orange', label:'Orange', buttons:[]})
     
     $buttonPanel.empty()
@@ -51,9 +54,9 @@ class CommandPanel {
       .append($remove)
       .append($collapse)
       .append($sweep)
-      .append($goToFlag)
+      .append($activateFlag)
       .append($setFlag)
-      // .append($cyan)
+      .append($cyan)
       // .append($orange)
     
     return $buttonPanel

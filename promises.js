@@ -202,10 +202,27 @@ Promises.chrome.tabGroups = class {
 // chrome.windows
 Promises.chrome.windows = class {
   /**
+   * A promise wrapper for chrome.windows.get()
+   * see https://developer.chrome.com/docs/extensions/reference/windows/#method-get
+   * @param {number} windowId The id of the window we are fetching
+   * @param {object} queryOptions a query options object
+   * @returns {Promise<Window>} the requested window
+   */
+  static async get(windowId, queryOptions) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.windows.get(windowId, queryOptions, window => resolve(window))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+  
+  /**
    * A promise wrapper for chrome.windows.getCurrent()
    * see: https://developer.chrome.com/docs/extensions/reference/windows/#method-getCurrent
    * @param {object} queryOptions a query options object
-   * @returns {Promise<object>} the found Window object
+   * @returns {Promise<Window>} the found Window object
   */
   static async getCurrent(queryOptions) {
     return new Promise((resolve, reject) => {

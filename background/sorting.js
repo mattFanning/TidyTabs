@@ -64,10 +64,7 @@ class Sorting {
       const matchedTabIds = regexMatchedTabs.map(tab => tab.id)
 
       //determine if the sorting group already exists or if we have to create.
-      const allGroups = await Promises.chrome.tabGroups.query({})
-      const FLAGS = "[0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]*"
-      const ruleTitleRegex = new RegExp(`^${FLAGS}${rule.groupProperties.title}$`, "u")
-      const matchedGroups = allGroups.filter(group => ruleTitleRegex.test(group.title))
+      const matchedGroups = await Sorting.findGroupByTitle(rule.groupProperties.title)
       if(matchedGroups.length > 0) {
         // console.log("Group found")
         const matchedGroupId = matchedGroups[0].id  
@@ -98,15 +95,17 @@ class Sorting {
     }
     
     const tabIds = tabs.map(tab => tab.id)
-    const groups = await Promises.chrome.tabGroups.query({title: "💭"})  //dustGroup
+    
+    //determine if the dust group already exists or if we have to create.
+    const groups = await Sorting.findGroupByTitle("💭")
     if(groups.length > 0) {
-      console.log("dustGroup found")
+      // console.log("dustGroup found")
       const dustGroupId = groups[0].id
       await Promises.chrome.tabs.group({groupId: dustGroupId, tabIds: tabIds})
       return dustGroupId
     }
     else {
-      console.log("dustGroup not found")
+      // console.log("dustGroup not found")
       const preSortActiveTab = await BackgroundController.getActiveTab()
       const newGroupId = await Promises.chrome.tabs.group({
         tabIds: tabIds, 
@@ -117,6 +116,15 @@ class Sorting {
       return newGroupId
     }
   }
+
+  static async findGroupByTitle(groupTitle) {
+    const FLAGS = "[0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]*"
+    const ruleTitleRegex = new RegExp(`^${FLAGS}${groupTitle}$`, "u")
+    
+    const allGroups = await Promises.chrome.tabGroups.query({})
+    return allGroups.filter(group => ruleTitleRegex.test(group.title))
+  }
+
 
   static getGroupPropertyKeys() {
     return Sorting.#GROUP_PROPERTY_KEYS

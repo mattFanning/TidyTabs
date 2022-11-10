@@ -473,17 +473,21 @@ importScripts('/background/tab_recall.js')
    // tab shortcuts
 
    static async goToLastTab() {
-    // query for all tabs in current window.
-    const {tabs} = await Promises.chrome.windows.getCurrent({populate: true})
-    const lastTab = tabs[tabs.length -1]
+    // get current tab from TabRecall (since we can't determine window)
+    const {currentTab} = await TabRecall.getRecallTabInfo()
+    const currentWindow = await Promises.chrome.windows.get(currentTab.windowId, {populate: true})
+
+    const lastTab = currentWindow.tabs[currentWindow.tabs.length - 1]
     const tabUpdate = await Promises.chrome.tabs.update(lastTab.id, {active: true})
     return true
    }
 
    static async goToFirstTab() {
-    // query for all tabs in current window.
-    const {tabs} = await Promises.chrome.windows.getCurrent({populate: true})
-    const firstTab = tabs[0]
+    // get current tab from TabRecall (since we can't determine window)
+    const {currentTab} = await TabRecall.getRecallTabInfo()
+    const currentWindow = await Promises.chrome.windows.get(currentTab.windowId, {populate: true})
+    
+    const firstTab = currentWindow.tabs[0]
     const tabUpdate = await Promises.chrome.tabs.update(firstTab.id, {active: true})
     return true
    }
