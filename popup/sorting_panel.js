@@ -313,6 +313,7 @@ class SortingPanel {
           .addClass('text_cell')
           .attr('contenteditable','true')
           .change(changeHandler)
+          .focus()
         $addressCell[0].addEventListener('input', textCellInputHandler)
 
         const $groupTitleCell = $selection.children().eq(1)
