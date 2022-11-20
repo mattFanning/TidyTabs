@@ -1,4 +1,5 @@
 class SortingPanel {
+  //full table
   static async generate() {
     const $sortingPanel = $("<div>", {id: `sorting_panel`, class: `sorting_panel`})
     const $table = await SortingPanel.#table()
@@ -41,6 +42,7 @@ class SortingPanel {
     return $table
   }
 
+  //table headers
   static #tableHeader() {
     const $tableRow = $('<tr>')
     $tableRow.html(`<th rowspan=2 class='border-right thick_border_bottom'>Address</th>
@@ -58,6 +60,7 @@ class SortingPanel {
     return $tableRow
   }
 
+  //table body
   static async #tableDataRow(sortingRule, index) {
     const {address, groupProperties} = sortingRule
     const groupPropertyKeys = await SortingPanel.#getGroupPropertyKeys()
@@ -83,11 +86,12 @@ class SortingPanel {
       )
       .click(
         function () {
-          const $insertRow = $('tr.insert_row, tr.remove_row')
-          if($insertRow.length <= 0) {
+          const $modifyRow = $('tr.insert_row, tr.remove_row, tr.edit_row')
+          if($modifyRow.length <= 0) {
             $(`tr.${selectionClass}`).removeClass(selectionClass)
             $(this).addClass(selectionClass)
             SortingPanel.#arrowButtonManagement()
+            SortingPanel.#editButtonManagement()
             SortingPanel.#removeButtonManagement()
           }
         }
@@ -99,7 +103,7 @@ class SortingPanel {
   static #tableInsertRow() {
     const $tableRow = $('<tr>', {class: "clickable insert_row"})
     const selectionClass = 'selected'
-    
+
     const changeHandler = function() {
       const $editableCells = $('td[contenteditable]')
       const returnedValues = $editableCells.val()
@@ -121,12 +125,13 @@ class SortingPanel {
       .appendTo($tableRow)
 
     SortingPanel.#insertRowCollapseCell()
-      .attr('contenteditable','false')
+    .attr('contenteditable','false')
       .appendTo($tableRow)
-    
+
     $tableRow.click(function () {
       $(`tr.${selectionClass}`).removeClass(selectionClass)
       SortingPanel.#arrowButtonManagement()
+      SortingPanel.#editButtonManagement()
       SortingPanel.#removeButtonManagement()
     })
 
@@ -146,20 +151,24 @@ class SortingPanel {
   }
 
   static #insertRowColorCell() {
+    const $td = $('<td>', {class: 'background_unset dropdown_cell border-right'})
+    const $select = this.#colorCellSelector()
+    $td.append($select)
+    return $td
+  }
+
+  static #colorCellSelector(defaultColor) {
     const removeBackgroundColor = function(index, css) {
       return (css.match(/background_\w+/))
     }
-
-    const $td = $('<td>', {class: 'background_unset dropdown_cell border-right'})
     const $select = $('<select>', {class: 'background_unset'})
-    
     $select.on('change', function(e) {
       var valueSelected = this.value
      
       $(this).removeClass(removeBackgroundColor)
-      $td.removeClass(removeBackgroundColor)
+      $(this).parent().removeClass(removeBackgroundColor)
       $(this).addClass(`background_${valueSelected}`)
-      $td.addClass(`background_${valueSelected}`)
+      $(this).parent().addClass(`background_${valueSelected}`)
     })
 
     // fill in color options
@@ -167,26 +176,40 @@ class SortingPanel {
 
     const colors = Object.values(chrome.tabGroups.Color)
     colors.forEach(color => {
-      $select.append($(`<option class="background_${color}" value="${color}">${color}</option>`))
+      if(color == defaultColor) {
+        $select.append($(`<option class="background_${color}" value="${color}" selected="selected">${color}</option>`))
+      } else {
+        $select.append($(`<option class="background_${color}" value="${color}">${color}</option>`))
+      }
     })
 
-    $td.append($select)
-    return $td
+    return $select
   }
 
   static #insertRowCollapseCell() {
     const $td = $('<td>', {class: 'background_unset dropdown_cell'})
-    const $select = $('<select>', {class: 'background_unset'})
-    
-    // fill in options
-    $select.append($(`<option value=""></option>`))
-    $select.append($(`<option value="true">true</option>`))
-    $select.append($(`<option value="false">false</option>`))
-    
+    const $select = SortingPanel.#collapsedCellSelector()
     $td.append($select)
     return $td
   }
 
+  static #collapsedCellSelector(defaultOption) {
+    const $select = $('<select>', {class: 'background_unset'})
+    
+    // fill in options
+    $select.append($(`<option value=""></option>`))
+    for(const option of [true, false]) {
+      if(option == defaultOption) {
+        $select.append($(`<option value="${option}" selected="selected">${option}</option>`))
+      } else {
+        $select.append($(`<option value="${option}">${option}</option>`))
+      }
+    }
+
+    return $select
+  }
+
+  //table footer
   static #tableFooter() {
     const $tableRow = $('<tr>', {class: "footer_row"})
     const $button_cell = $('<th>', {class: 'footer_button_cell thick_border_top'})
@@ -205,7 +228,7 @@ class SortingPanel {
         label: '&#11015', message: 'down', isDisabled: true, clickMethod: () => SortingPanel.#moveSelectedRow('down')
       }))
       .append(SortingPanel.#footerButton({
-        label: '&#x0270E', message: 'edit', isDisabled: true, clickMethod: () => {}
+        label: '&#x0270E', message: 'edit', isDisabled: true, clickMethod: () => SortingPanel.#editSelectedRow()
       }))
       .append(SortingPanel.#footerButton({
         label: '&#8722', message: 'remove', isDisabled: true, clickMethod: () => {SortingPanel.#removeSelectedRow()}
@@ -223,6 +246,7 @@ class SortingPanel {
     return $tableRow
   }
 
+  //footer button functionality
   static #footerButton(buttonOptions) {
     const {label, message, isDisabled, clickMethod} = buttonOptions
     // const hoveringClasses = ``
@@ -260,11 +284,71 @@ class SortingPanel {
     }
   }
 
-  static async #removeSelectedRow() {
+  static async #editSelectedRow() {
     const selectionClass = 'selected'
     const $selection = $(`tr.${selectionClass}`)
     if($selection.length  > 0) {
       const index = parseInt($selection.attr('data-index'))
+      const sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
+      const ruleData = sortingRules[index]
+
+      $selection
+        .removeClass('data_row')
+        .addClass('edit_row')
+
+        const changeHandler = function() {
+          const $editableCells = $('td[contenteditable]')
+          const returnedValues = $editableCells.val()
+          console.log(returnedValues)
+        }
+
+        const textCellInputHandler = function (event) {
+          console.log(`${event.data}`)
+          // event.data will be null if "empty"
+          SortingPanel.#checkButtonManagement()
+        }
+
+        const $addressCell = $selection.children().eq(0)
+        $addressCell
+          .addClass('text_cell')
+          .attr('contenteditable','true')
+          .change(changeHandler)
+        $addressCell[0].addEventListener('input', textCellInputHandler)
+
+        const $groupTitleCell = $selection.children().eq(1)
+        $groupTitleCell
+          .addClass('text_cell')
+          .attr('contenteditable','true')
+          .change(changeHandler)
+        $groupTitleCell[0].addEventListener('input', textCellInputHandler)
+        
+        const $groupColorCell = $selection.children().eq(2)
+        $groupColorCell
+          .empty()
+          .addClass("dropdown_cell border-right")
+          .append(SortingPanel.#colorCellSelector(ruleData.groupProperties.color))
+          .attr('contenteditable','false')
+        
+        const $groupCollapsedCell = $selection.children().eq(3)
+        $groupCollapsedCell
+          .empty()
+          .addClass("dropdown_cell")
+          .append(SortingPanel.#collapsedCellSelector(ruleData.groupProperties.collapsed))
+          .attr('contenteditable','false')
+    }
+
+    $selection.removeClass(selectionClass)
+    SortingPanel.#arrowButtonManagement()
+    SortingPanel.#editButtonManagement()
+    SortingPanel.#addButtonManagement()
+    SortingPanel.#removeButtonManagement()
+    SortingPanel.#checkButtonManagement()
+  }
+
+  static async #removeSelectedRow() {
+    const selectionClass = 'selected'
+    const $selection = $(`tr.${selectionClass}`)
+    if($selection.length  > 0) {
       $selection
         .removeClass('data_row')
         .addClass('remove_row')
@@ -272,10 +356,12 @@ class SortingPanel {
 
     $selection.removeClass(selectionClass)
     SortingPanel.#arrowButtonManagement()
+    SortingPanel.#editButtonManagement()
     SortingPanel.#addButtonManagement()
     SortingPanel.#removeButtonManagement()
     SortingPanel.#checkButtonManagement()
   }
+
   static async #addInsertRow() {
     // determine if we are using selection's data-index or last data-index
     const selectionClass = 'selected'
@@ -287,13 +373,21 @@ class SortingPanel {
     } else {
       index = $('tr[data-index]').length -1
     }
-    console.log(`index is: ${index}`)
 
     const $tableRow = SortingPanel.#tableInsertRow() 
-    $tableRow.insertAfter($(`tr[data-index="${index}"]`))
+
+    if(index < 0) {
+      console.log('Table is empty.  Make new first row')
+      $tableRow.insertBefore($('tr.footer_row'))
+    } else {
+      console.log(`index is: ${index}`)  
+      $tableRow.insertAfter($(`tr[data-index="${index}"]`))
+    }
+    
     $selection.removeClass(selectionClass)
     
     SortingPanel.#arrowButtonManagement()
+    SortingPanel.#editButtonManagement()
     SortingPanel.#addButtonManagement()
     SortingPanel.#removeButtonManagement()
   }
@@ -301,6 +395,8 @@ class SortingPanel {
   static async #saveRow() {
     const $insertRow = $('tr.insert_row')
     const $removeRow = $('tr.remove_row')
+    const $editRow = $('tr.edit_row')
+
     let sortingRules = await Promises.chrome.runtime.sendMessage('get_sorting_rules')
 
     switch(true) {
@@ -308,14 +404,8 @@ class SortingPanel {
         if(SortingPanel.#rowDataIsValid($insertRow)) {
           // add insert_row
           const index = parseInt($insertRow.prev().attr('data-index')) + 1
-          const rowData = SortingPanel.#getRowData($insertRow)
-          const newSortingRule = {
-            address: rowData.address, 
-            groupProperties:{
-              title: rowData.title,
-              color: rowData.color === '' ? undefined : rowData.color,
-              collapsed: rowData.collapsed === '' ? undefined : rowData.collapsed === 'true'
-            }}
+          const newSortingRule = SortingPanel.#getRowData($insertRow)
+          
           sortingRules.splice(index, 0, newSortingRule)
           // send message for save
           await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
@@ -331,19 +421,23 @@ class SortingPanel {
         await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
         await SortingPanel.#refreshTable()
         break
+      case $editRow.length > 0 :
+        if(SortingPanel.#rowDataIsValid($editRow)) {
+          // add insert_row
+          const index = parseInt($editRow.attr('data-index'))
+          const rowData = SortingPanel.#getRowData($editRow)
+          sortingRules[index] = rowData
+          await Promises.chrome.runtime.sendMessage({message: 'set_sorting_rules', arg1: sortingRules})
+          await SortingPanel.#refreshTable()
+        }
+
+        break
       default:
         break
     }
   }
 
-  static #GROUP_PROPERTY_KEYS = undefined
-  static async #getGroupPropertyKeys() {
-    if(SortingPanel.#GROUP_PROPERTY_KEYS == undefined) {
-      SortingPanel.#GROUP_PROPERTY_KEYS = await Promises.chrome.runtime.sendMessage("get_group_properties_keys")
-    }
-    return SortingPanel.#GROUP_PROPERTY_KEYS
-  }
-
+  //footer button management
   static #arrowButtonManagement() {
     const $up = $('#footer_button_up')
     const $down = $('#footer_button_down')
@@ -351,6 +445,7 @@ class SortingPanel {
     const $selectedRow = $('tr.selected')
     if($selectedRow.length <= 0 ||
        $selectedRow.hasClass('insert_row') ||
+       $selectedRow.hasClass('edit_row') ||
        $selectedRow.hasClass('remove_row')) {
       // up: disabled, down: disabled
       $up.prop('disabled',true).addClass('disabled')
@@ -379,10 +474,25 @@ class SortingPanel {
     }
   }
 
+  static #editButtonManagement() {
+    const $edit = $('#footer_button_edit')
+    const $selectedRow = $('tr.selected')
+    if($selectedRow.length <= 0 || 
+      $selectedRow.hasClass('insert_row') ||
+      $selectedRow.hasClass('edit_row') ||
+      $selectedRow.hasClass('remove_row')) {
+      $edit.prop('disabled',true).addClass('disabled')
+    } else {
+      $edit.prop('disabled',false).removeClass('disabled')
+    }
+  }
+
   static #removeButtonManagement() {
     const $remove = $('#footer_button_remove')
     const $selectedRow = $('tr.selected')
-    if($selectedRow.length <= 0 || $selectedRow.hasClass('insert_row')) {
+    if($selectedRow.length <= 0 || 
+      $selectedRow.hasClass('insert_row') ||
+      $selectedRow.hasClass('edit_row')) {
       $remove.prop('disabled',true).addClass('disabled')
     } else {
       $remove.prop('disabled',false).removeClass('disabled')
@@ -391,9 +501,9 @@ class SortingPanel {
 
   static #addButtonManagement() {
     const $add = $('#footer_button_add')
-    const $insertRemoveRow = $('.insert_row, .remove_row')
+    const $modifyRow = $('.insert_row, .remove_row, .edit_row')
     
-    if($insertRemoveRow.length > 0) {
+    if($modifyRow.length > 0) {
       $add.prop('disabled',true).addClass('disabled')
     } else {
       $add.prop('disabled',false).removeClass('disabled')
@@ -403,25 +513,41 @@ class SortingPanel {
   static #checkButtonManagement() {
     const $insert_selection = $('tr.insert_row')
     const $remove_selection = $('tr.remove_row')
+    const $edit_selection = $('tr.edit_row')
 
     switch(true) {
       case $remove_selection.length > 0 :
         $('#footer_button_save').prop('disabled',false).removeClass('disabled')
         break
       case $insert_selection.length > 0 :
-        const $textCells = $('.insert_row .text_cell')
-        let validData = true 
-        $textCells.each(index => {
-          if($textCells[index].textContent === '') {
-            validData = false
+        const $insertTextCells = $('.insert_row .text_cell')
+        let validInsertData = true 
+        $insertTextCells.each(index => {
+          if($insertTextCells[index].textContent === '') {
+            validInsertData = false
           }
         })
 
-        if(validData) {
+        if(validInsertData) {
           $('#footer_button_save').prop('disabled',false).removeClass('disabled')
         } else {
           $('#footer_button_save').prop('disabled',true).addClass('disabled')
         }  
+        break
+      case $edit_selection.length > 0 :
+        const $editTextCells = $('.edit_row .text_cell')
+        let validEditData = true 
+        $editTextCells.each(index => {
+          if($editTextCells[index].textContent === '') {
+            validEditData = false
+          }
+        })
+
+        if(validEditData) {
+          $('#footer_button_save').prop('disabled',false).removeClass('disabled')
+        } else {
+          $('#footer_button_save').prop('disabled',true).addClass('disabled')
+        }
         break
       default:
         $('#footer_button_save').prop('disabled',true).addClass('disabled')
@@ -429,11 +555,20 @@ class SortingPanel {
     }
   }
 
+  //misc
+  static #GROUP_PROPERTY_KEYS = undefined
+  static async #getGroupPropertyKeys() {
+    if(SortingPanel.#GROUP_PROPERTY_KEYS == undefined) {
+      SortingPanel.#GROUP_PROPERTY_KEYS = await Promises.chrome.runtime.sendMessage("get_group_properties_keys")
+    }
+    return SortingPanel.#GROUP_PROPERTY_KEYS
+  }
+
   static #rowDataIsValid($trSelector) {
     const tds = $trSelector.children('td')
     const data = SortingPanel.#getRowData($trSelector)
     
-    if(data.address !== '' && data.title !== '') {
+    if(data.address !== '' && data.groupProperties.title !== '') {
       return true
     }
     return false
@@ -441,11 +576,24 @@ class SortingPanel {
 
   static #getRowData($trSelector) {
     const tds = $trSelector.children('td')
+    
+    let color = undefined
+    if($(tds[2]).find(":selected").text() != '') {
+      color = $(tds[2]).find(":selected").text()
+    }
+
+    let collapsed = undefined
+    if($(tds[3]).find(":selected").text() != '') {
+      collapsed = $(tds[3]).find(":selected").text()
+    }
+    
     return {
       address: tds[0].textContent,
-      title: tds[1].textContent,
-      color: $(tds[2]).find(":selected").text(),
-      collapsed: tds[3].textContent
+      groupProperties: {
+        title: tds[1].textContent,
+        color: color,
+        collapsed: collapsed
+      }
     }
   }
 }

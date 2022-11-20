@@ -33,6 +33,15 @@
   outline: thin solid;
 }
 
+.edit_row {
+  font-family: monospace;
+  word-break: break-all;
+  outline: thin solid;
+
+  background-color: rgba(50, 50, 250, 0.3);
+  min-height: 17px;
+}
+
 .remove_row {
   font-family: monospace;
   outline: thin solid;
