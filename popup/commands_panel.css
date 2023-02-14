@@ -54,6 +54,10 @@
   align-items: start;
 }
 
+.toggle_button > b {
+  max-height: 28px;
+}
+
 .toggle_led {
   height: 10px;
   width: 10px;

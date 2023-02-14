@@ -12,8 +12,11 @@ chrome.commands.onCommand.addListener((command) => {
   const goToFlag = /go_to_flag_\d/
   const applyFlag = /apply_flag_\d/
   const recallTab = /recall_tab/
-  const firstTab = /first_tab/
-  const lastTab = /last_tab/
+  const firstTab = /window_first_tab/
+  const lastTab = /window_last_tab/
+  const groupFirstTab = /group_first_tab/
+  const groupLastTab = /group_last_tab/
+  const sortHighlighted = /sort_highlighted/
 
   let specificFlagNumber;
   switch(true) {
@@ -29,10 +32,19 @@ chrome.commands.onCommand.addListener((command) => {
       BackgroundController.executeMessage({message: "recall_tab"})
       break
     case firstTab.test(command):
-      BackgroundController.executeMessage({message: "first_tab"})
+      BackgroundController.executeMessage({message: "window_first_tab"})
       break
     case lastTab.test(command):
-      BackgroundController.executeMessage({message: "last_tab"})
+      BackgroundController.executeMessage({message: "window_last_tab"})
+      break
+    case sortHighlighted.test(command):
+      BackgroundController.executeMessage({message: "sort_highlighted_tabs"})
+      break
+    case groupFirstTab.test(command):
+      BackgroundController.executeMessage({message: "group_first_tab"})
+      break
+    case groupLastTab.test(command):
+      BackgroundController.executeMessage({message: "group_last_tab"})
       break
     default:
       BackgroundController.executeMessage(command)

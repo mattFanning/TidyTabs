@@ -122,13 +122,22 @@ importScripts('/background/tab_recall.js')
       case "recall_tab":
         returnedValue = await TabRecall.activatePreviousTab()
         break
+      
     // tab shortcuts
-      case "last_tab":
+      case "window_last_tab":
         returnedValue = await BackgroundController.goToLastTab()
         break
-      case "first_tab":
+      case "window_first_tab":
         returnedValue = await BackgroundController.goToFirstTab()
         break
+      case "group_last_tab":
+        returnedValue = await BackgroundController.goToGroupLastTab()
+        break
+      case "group_first_tab":
+        returnedValue = await BackgroundController.goToGroupFirstTab()
+        break
+        
+    //unknown
       default:
         console.error(`unknown command: %c${message}`, "color:red")
     }
@@ -471,24 +480,55 @@ importScripts('/background/tab_recall.js')
    }
 
    // tab shortcuts
+  static async goToLastTab() {
+    const windowedTabs = await BackgroundController.#getCurrentWindowTabs()
 
-   static async goToLastTab() {
-    // get current tab from TabRecall (since we can't determine window)
-    const {currentTab} = await TabRecall.getRecallTabInfo()
-    const currentWindow = await Promises.chrome.windows.get(currentTab.windowId, {populate: true})
+    const lastTab = windowedTabs[windowedTabs.length - 1]
+    await Promises.chrome.tabs.update(lastTab.id, {active: true})
 
-    const lastTab = currentWindow.tabs[currentWindow.tabs.length - 1]
-    const tabUpdate = await Promises.chrome.tabs.update(lastTab.id, {active: true})
     return true
-   }
+  }
 
-   static async goToFirstTab() {
-    // get current tab from TabRecall (since we can't determine window)
-    const {currentTab} = await TabRecall.getRecallTabInfo()
-    const currentWindow = await Promises.chrome.windows.get(currentTab.windowId, {populate: true})
+  static async goToFirstTab() {
+    const windowedTabs = await BackgroundController.#getCurrentWindowTabs()
     
-    const firstTab = currentWindow.tabs[0]
-    const tabUpdate = await Promises.chrome.tabs.update(firstTab.id, {active: true})
+    const firstTab = windowedTabs[0]
+    await Promises.chrome.tabs.update(firstTab.id, {active: true})
+
     return true
-   }
+  }
+
+  static async goToGroupLastTab() {
+    const groupedTabs = await BackgroundController.#getCurrentGroupTabs()
+
+    const lastTab = groupedTabs[groupedTabs.length -1]
+    await Promises.chrome.tabs.update(lastTab.id, {active: true})
+
+    return true
+  }
+
+  static async goToGroupFirstTab() {
+    const groupedTabs = await BackgroundController.#getCurrentGroupTabs()
+    
+    const firstTab = groupedTabs[0]
+    await Promises.chrome.tabs.update(firstTab.id, {active: true})
+    
+    return true
+  }
+
+  static async #getCurrentGroupTabs() {
+    const {currentTab: currentTabRecall} = await TabRecall.getRecallTabInfo()
+    const currentTab = await Promises.chrome.tabs.get(currentTabRecall.tabId)
+    const groupedTabs = await Promises.chrome.tabs.query({groupId: currentTab.groupId})
+    groupedTabs.sort((a, b) => a.index <= b.index)
+    return groupedTabs
+  }
+
+  static async #getCurrentWindowTabs() {
+    const {currentTab: currentTabRecall} = await TabRecall.getRecallTabInfo()
+    const currentTab = await Promises.chrome.tabs.get(currentTabRecall.tabId)
+    const windowedTabs = await Promises.chrome.tabs.query({windowId: currentTab.windowId})
+    windowedTabs.sort((a, b) => a.index <= b.index)
+    return windowedTabs
+  }
 }

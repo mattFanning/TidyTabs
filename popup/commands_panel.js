@@ -43,8 +43,10 @@ class CommandPanel {
     })
     const $cyan = await CommandPanel.#buttonGroup({color:'cyan', label:'Go To', buttons:[
       {label:'Previous Tab', message:'recall_tab'},
-      {label:'First Tab', message:'first_tab'},
-      {label:'Last Tab', message:'last_tab'}]
+      {label:'Window First Tab', message:'window_first_tab'},
+      {label:'Window Last Tab', message:'window_last_tab'},
+      {label:'Group First Tab', message:'group_first_tab'},
+      {label:'Group Last Tab', message:'group_last_tab'}]
     })
     const $orange = await CommandPanel.#buttonGroup({color:'orange', label:'Orange', buttons:[]})
     
@@ -57,7 +59,7 @@ class CommandPanel {
       .append($activateFlag)
       .append($setFlag)
       .append($cyan)
-      // .append($orange)
+      .append($orange)
     
     return $buttonPanel
   }

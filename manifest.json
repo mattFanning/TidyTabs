@@ -14,7 +14,7 @@
   "commands": {
     "_execute_action": {},
     "caa.apply_flag_1": {"description": "Flag 1: Apply"},
-    "cab.1g.go_to_flag_1": {"description": "Flag 1: Switch"},
+    "cab.go_to_flag_1": {"description": "Flag 1: Switch"},
     "cac.apply_flag_2": {"description": "Flag 2: Apply"},
     "cad.go_to_flag_2": {"description": "Flag 2: Switch"},
     "cae.apply_flag_3": {"description": "Flag 3: Apply"},
@@ -34,8 +34,11 @@
     "cas.apply_flag_0": {"description": "Flag 0: Apply"},
     "cat.go_to_flag_0": {"description": "Flag 0: Switch"},
     "cau.recall_tab": {"description": "Switch to previous tab"},
-    "cav.last_tab": {"description": "Switch to last tab"},
-    "caw.first_tab": {"description": "Switch to first tab"}
+    "cav.window_last_tab": {"description": "Switch to window's last tab"},
+    "caw.window_first_tab": {"description": "Switch to window's first tab"},
+    "cax.group_last_tab": {"description": "Switch to group's last tab"},
+    "cay.group_first_tab": {"description": "Switch to group's first tab"},
+    "caz.sort_highlighted": {"description": "Sorts highlighted tabs"}
   },
   "permissions": ["tabs", "tabGroups", "storage"],
   "action": {
