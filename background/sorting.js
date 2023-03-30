@@ -93,35 +93,45 @@ class Sorting {
     if(tabs.length <= 0) {
       return false
     }
+
+    let dustGroupIds = []
     
-    const tabIds = tabs.map(tab => tab.id)
+    const windowIds = [...new Set(tabs.map(item => item.windowId))];
     
-    //determine if the dust group already exists or if we have to create.
-    const groups = await Sorting.findGroupByTitle("💭")
-    if(groups.length > 0) {
-      // console.log("dustGroup found")
-      const dustGroupId = groups[0].id
-      await Promises.chrome.tabs.group({groupId: dustGroupId, tabIds: tabIds})
-      return dustGroupId
+    for(let i = 0; i < windowIds.length; i++) {
+      const tabIds = tabs.filter(tab => {
+        if(tab.windowId == windowIds[i]) {
+          return tab.id
+        }
+      }).map(tab => tab.id)
+      
+      //determine if the dust group already exists or if we have to create.
+      const groups = await Sorting.findGroupByTitle(windowIds[i],"💭")
+      if(groups.length > 0) {
+        // console.log("dustGroup found")
+        const dustGroupId = groups[0].id
+        await Promises.chrome.tabs.group({groupId: dustGroupId, tabIds: tabIds})
+        dustGroupIds.push(dustGroupId)
+      }
+      else {
+        // console.log("dustGroup not found")
+        const newGroupId = await Promises.chrome.tabs.group({
+          tabIds: tabIds, 
+          createProperties: {windowId: windowIds[i]}
+        })
+        const updateProperties = {title: "💭"}
+        await Promises.chrome.tabGroups.update(newGroupId, updateProperties)
+        dustGroupIds.push(newGroupId)
+      }
     }
-    else {
-      // console.log("dustGroup not found")
-      const preSortActiveTab = await BackgroundController.getActiveTab()
-      const newGroupId = await Promises.chrome.tabs.group({
-        tabIds: tabIds, 
-        createProperties: {windowId: preSortActiveTab.windowId}
-      })
-      const updateProperties = {title: "💭"}
-      await Promises.chrome.tabGroups.update(newGroupId, updateProperties)
-      return newGroupId
-    }
+    return dustGroupIds
   }
 
-  static async findGroupByTitle(groupTitle) {
+  static async findGroupByTitle(windowId, groupTitle) {
     const FLAGS = "[0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]*"
     const ruleTitleRegex = new RegExp(`^${FLAGS}${groupTitle}$`, "u")
     
-    const allGroups = await Promises.chrome.tabGroups.query({})
+    const allGroups = await Promises.chrome.tabGroups.query({windowId: windowId})
     return allGroups.filter(group => ruleTitleRegex.test(group.title))
   }
 

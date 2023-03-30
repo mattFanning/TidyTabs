@@ -78,6 +78,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
       await BackgroundController.sweepAllUnGroupedTabs()
     }
   }, 500)
+  TabGroupFlagger.updateAllTabGroupFlags()
 })
 
 chrome.tabs.onRemoved.addListener(async (tab) => {

@@ -59,7 +59,7 @@ class CommandPanel {
       .append($activateFlag)
       .append($setFlag)
       .append($cyan)
-      .append($orange)
+      // .append($orange)
     
     return $buttonPanel
   }
