@@ -64,7 +64,7 @@ class Sorting {
       const matchedTabIds = regexMatchedTabs.map(tab => tab.id)
 
       //determine if the sorting group already exists or if we have to create.
-      const matchedGroups = await Sorting.findGroupByTitle(rule.groupProperties.title)
+      const matchedGroups = await Sorting.findGroupByTitle("all", rule.groupProperties.title)
       if(matchedGroups.length > 0) {
         // console.log("Group found")
         const matchedGroupId = matchedGroups[0].id  
@@ -131,7 +131,12 @@ class Sorting {
     const FLAGS = "[0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]*"
     const ruleTitleRegex = new RegExp(`^${FLAGS}${groupTitle}$`, "u")
     
-    const allGroups = await Promises.chrome.tabGroups.query({windowId: windowId})
+    let allGroups
+     if(windowId == "all") {
+      allGroups = await Promises.chrome.tabGroups.query({})
+     } else {
+      allGroups = await Promises.chrome.tabGroups.query({windowId: windowId})
+     }
     return allGroups.filter(group => ruleTitleRegex.test(group.title))
   }
 

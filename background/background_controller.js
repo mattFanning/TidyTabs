@@ -308,15 +308,17 @@ importScripts('/background/tab_recall.js')
   */
   static async collapseOtherGroupsInWindow(activeTab) {
     // get all non-collapsed groups in windowId
-    const allGroups = await Promises.chrome.tabGroups.query({collapsed: false, windowId: activeTab.windowId})
+    if(activeTab) {
+      const allGroups = await Promises.chrome.tabGroups.query({collapsed: false, windowId: activeTab.windowId})
 
-    //filter groupId out of allGroups
-    const filteredGroups = allGroups.filter(group => {
-      return group.id != activeTab.groupId
-    })
+      //filter groupId out of allGroups
+      const filteredGroups = allGroups.filter(group => {
+        return group.id != activeTab.groupId
+      })
 
-    // collapse filterGroups
-    await BackgroundController.#collapseGroups(filteredGroups)
+      // collapse filterGroups
+      await BackgroundController.#collapseGroups(filteredGroups)
+    }
   }
 
   /**
