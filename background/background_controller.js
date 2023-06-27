@@ -117,6 +117,8 @@ importScripts('/background/tab_recall.js')
       case "go_to_flag":
         returnedValue = await BackgroundController.goToFlag(input['arg1'])
         break
+      case "auto_flag":
+        returnedValue = await BackgroundController.autoFlag()
 
     // recall
       case "recall_tab":
@@ -479,6 +481,25 @@ importScripts('/background/tab_recall.js')
 
   static async goToFlag(flagNumber) {
     return await Flagging.activateFlag(flagNumber) 
+   }
+
+   static async autoFlag() {
+    const windowTabs = await BackgroundController.#getCurrentWindowTabs()
+    if(windowTabs.length > 0) {
+      let flagItr = 1  //  0 <= flagItr < Flagging.TOTAL_FLAGS
+      const windowId = windowTabs[0].windowId
+      const groups = new Set(windowTabs.map(tab => tab.groupId))
+
+      for(let groupId of groups) {
+        const groupTabs = windowTabs.filter(tab => tab.groupId === groupId)
+        const tabToFlag = groupTabs[0]
+        const flagTabResponse = await Flagging.flagTab(flagItr, {tabId: tabToFlag.id})
+        flagItr++;
+      }
+      TabGroupFlagger.updateAllTabGroupFlags()
+      return true;
+    }
+    return false;
    }
 
    // tab shortcuts

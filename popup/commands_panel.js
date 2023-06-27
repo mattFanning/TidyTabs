@@ -39,7 +39,8 @@ class CommandPanel {
       {label:'Flag #2', message:'apply_flag', arg1: 2},
       {label:'Flag #3', message:'apply_flag', arg1: 3},
       {label:'Flag #4', message:'apply_flag', arg1: 4},
-      {label:'Flag #5', message:'apply_flag', arg1: 5}] 
+      {label:'Flag #5', message:'apply_flag', arg1: 5},
+      {label:'Auto Flag', message:'auto_flag', arg1: 5}] 
     })
     const $cyan = await CommandPanel.#buttonGroup({color:'cyan', label:'Go To', buttons:[
       {label:'Previous Tab', message:'recall_tab'},

@@ -11,6 +11,7 @@ chrome.commands.onCommand.addListener((command) => {
   //all of this is required simply so I can arrange the order of commmands in the extension shortcuts view.
   const goToFlag = /go_to_flag_\d/
   const applyFlag = /apply_flag_\d/
+  const autoFlag = /auto_flag/
   const recallTab = /recall_tab/
   const firstTab = /window_first_tab/
   const lastTab = /window_last_tab/
@@ -27,6 +28,9 @@ chrome.commands.onCommand.addListener((command) => {
     case applyFlag.test(command):
       specificFlagNumber = command.slice(command.length -1, command.length)
       BackgroundController.executeMessage({message: "apply_flag", arg1: specificFlagNumber})
+      break
+    case autoFlag.test(command):
+      BackgroundController.executeMessage({message: "auto_flag"})
       break
     case recallTab.test(command):
       BackgroundController.executeMessage({message: "recall_tab"})
